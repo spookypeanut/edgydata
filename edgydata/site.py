@@ -1,4 +1,4 @@
-from edgydata.base import AbstractSolarEdge, BASE_URL
+from edgydata.base import AbstractSolarEdge, BASE_URL, date_from_string
 
 
 class Site(AbstractSolarEdge):
@@ -21,3 +21,9 @@ class Site(AbstractSolarEdge):
     def get_details(self):
         return self._call("details")
 
+    def get_data_period(self):
+        results = self._call("dataPeriod")
+        return_dict = {}
+        for key, value in results.items():
+            return_dict[key] = date_from_string(value)
+        return return_dict

@@ -1,8 +1,14 @@
 import requests
 from copy import deepcopy
+from datetime import datetime
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 
+def date_from_string(input_string):
+    return datetime.strptime(input_string, "%Y-%m-%d").date()
+
+def datetime_from_string(input_string):
+    raise NotImplementedError
 
 class AbstractSolarEdge(object):
     def __init__(self, api_key):
