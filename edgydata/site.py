@@ -1,9 +1,9 @@
-from edgydata import AbstractSolarEdge
+from edgydata.base import AbstractSolarEdge
 
 BASEURL = "https://monitoringapi.solaredge.com/site/{site_id}/{function}.json"
 
 
-class EdgySite(AbstractSolarEdge):
+class Site(AbstractSolarEdge):
     def __init__(self, api_key, site_id):
         AbstractSolarEdge.__init__(self, api_key)
         self._site_id = site_id
