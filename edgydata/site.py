@@ -11,12 +11,13 @@ class Site(AbstractSolarEdge):
                   "function": function}
         return "{base}/site/{site_id}/{function}.json".format(**kwargs)
 
-    def get_details(self):
-        return self._call("details")
-
     def _call(self, function, data=None):
         if data is None:
             response = self._raw_call(self._get_url(function), {})
         else:
             response = self._raw_call(self._get_url(function), data)
         return response[function]
+
+    def get_details(self):
+        return self._call("details")
+
