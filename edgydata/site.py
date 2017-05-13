@@ -1,6 +1,4 @@
-from edgydata.base import AbstractSolarEdge
-
-BASEURL = "https://monitoringapi.solaredge.com/site/{site_id}/{function}.json"
+from edgydata.base import AbstractSolarEdge, BASE_URL
 
 
 class Site(AbstractSolarEdge):
@@ -9,8 +7,9 @@ class Site(AbstractSolarEdge):
         self._site_id = site_id
 
     def _get_url(self, function):
-        kwargs = {"site_id": self._site_id, "function": function}
-        return BASEURL.format(**kwargs)
+        kwargs = {"base": BASE_URL, "site_id": self._site_id,
+                  "function": function}
+        return "{base}/site/{site_id}/{function}.json".format(**kwargs)
 
     def get_details(self):
         return self._call("details")

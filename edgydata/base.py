@@ -1,6 +1,8 @@
 import requests
 from copy import deepcopy
 
+BASE_URL = "https://monitoringapi.solaredge.com"
+
 
 class AbstractSolarEdge(object):
     def __init__(self, api_key):
