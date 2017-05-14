@@ -1,14 +1,11 @@
 import requests
 from copy import deepcopy
-from datetime import datetime
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 
-def date_from_string(input_string):
-    return datetime.strptime(input_string, "%Y-%m-%d").date()
 
-def datetime_from_string(input_string):
-    raise NotImplementedError
+class ResponseError(IOError):
+    """ The response from SolarEdge was not in the form we expected """
 
 class AbstractSolarEdge(object):
     def __init__(self, api_key):
@@ -20,5 +17,5 @@ class AbstractSolarEdge(object):
         response = requests.get(url, params=data_with_api)
         if not response.ok:
             print(response.content)
-            raise RuntimeError("API call failed: %s" % response.reason)
+            raise ResponseError("API call failed: %s" % response.reason)
         return response.json()
