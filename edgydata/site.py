@@ -1,6 +1,38 @@
+from copy import deepcopy
 from edgydata.base import AbstractSolarEdge, BASE_URL, ResponseError
 from edgydata.time import date_from_string, datetime_to_string
 
+
+def _combine_power_details(first, second):
+    # Check everything is as it should be
+    from pprint import pprint
+    pprint(first)
+    should_have = set(["meters", "timeUnit", "unit"])
+    if set(first.keys()) != should_have:
+        raise ResponseError("API gave back weird results: %s" % first.keys())
+    if set(second.keys()) != should_have:
+        raise ResponseError("API gave back weird results: %s" % second.keys())
+    if first["unit"] != second["unit"]:
+        raise ResponseError("Units differ between power details")
+    if first["timeUnit"] != second["timeUnit"]:
+        raise ResponseError("Time units differ between power details")
+
+    return_dict = deepcopy(first)
+    return_dict["meters"] = []
+    for meter in [a for a in first["meters"]]:
+        type_ = meter["type"]
+        toupdate = [a["values"] for a in first["meters"]
+                    if a["type"] == type_][0]
+        if len(toupdate[-1]) == 1:
+            # For some reason, the last entry doesn't have a value. So
+            # we need a (single point) overlap, and we clean out the
+            # last point
+            toupdate = toupdate[:-1]
+        updatewith = [a["values"] for a in second["meters"]
+                      if a["type"] == type_][0]
+        toupdate.extend(updatewith)
+        return_dict["meters"].append({"type": type_, "values": toupdate})
+    return return_dict
 
 class Site(AbstractSolarEdge):
     def __init__(self, api_key, site_id):
