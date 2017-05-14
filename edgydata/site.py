@@ -28,3 +28,9 @@ class Site(AbstractSolarEdge):
         for key, value in results.items():
             return_dict[key] = date_from_string(value)
         return return_dict
+
+    def get_power_details(self, start_time, end_time):
+        params = {"startTime": datetime_to_string(start_time),
+                  "endTime": datetime_to_string(end_time)}
+        results = self._call("powerDetails", params)
+        return results
