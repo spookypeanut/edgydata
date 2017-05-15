@@ -1,12 +1,11 @@
 from copy import deepcopy
 from edgydata.base import AbstractSolarEdge, BASE_URL, ResponseError
 from edgydata.time import date_from_string, datetime_to_string
+from datetime import timedelta
 
 
 def _combine_power_details(first, second):
     # Check everything is as it should be
-    from pprint import pprint
-    pprint(first)
     should_have = set(["meters", "timeUnit", "unit"])
     if set(first.keys()) != should_have:
         raise ResponseError("API gave back weird results: %s" % first.keys())
@@ -59,10 +58,23 @@ class Site(AbstractSolarEdge):
         return_dict = {}
         for key, value in results.items():
             return_dict[key] = date_from_string(value)
-        return return_dict
+        return (return_dict["startDate"], return_dict["endDate"])
 
     def get_power_details(self, start_time, end_time):
+        if end_time <= start_time:
+            raise ValueError("Please get your times the right way round")
+        if (end_time - start_time).days >= 28:
+            # The time span is large for the SolarEdge API, so split it
+            # up over multiple calls and rejoin at the end
+            middle = start_time + timedelta(days=27)
+            details_one = self.get_power_details(start_time, middle)
+            details_two = self.get_power_details(middle, end_time)
+            return _combine_power_details(details_one, details_two)
         params = {"startTime": datetime_to_string(start_time),
                   "endTime": datetime_to_string(end_time)}
         results = self._call("powerDetails", params)
         return results
+
+    def get_all_power_details(self):
+        start, end = self.get_data_period()
+        return self.get_power_details(start, end)

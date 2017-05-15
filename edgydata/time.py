@@ -5,7 +5,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def date_from_string(input_string):
-    return datetime.strptime(input_string,).date()
+    return datetime.strptime(input_string, DATE_FORMAT).date()
 
 
 def datetime_from_string(input_string):
