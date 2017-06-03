@@ -56,6 +56,12 @@ class Site(AbstractSolarEdge):
     def get_details(self):
         return self._call("details")
 
+    def get_overview(self):
+        return self._call("overview")
+
+    def get_current_power_flow(self):
+        return self._call("currentPowerFlow", top_level="siteCurrentPowerFlow")
+
     def get_data_period(self):
         results = self._call("dataPeriod")
         return_dict = {}
