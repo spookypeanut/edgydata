@@ -90,6 +90,3 @@ class LocalDatabase(object):
 
     def _store_results_in_db(self, site_id, results):
         """ Store output from get_all_power_details into the local database """
-
-
-
