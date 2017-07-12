@@ -2,6 +2,12 @@ import os
 import sqlite3
 
 
+def _check(mystr):
+    if mystr != mystr.translate(None, ")(][;,"):
+        raise RuntimeError("Input '%s' looks dodgy to me" % mystr)
+    return mystr
+
+
 def get_db_path():
     return os.path.join(os.environ["HOME"], "edgydata.db")
 
@@ -48,7 +54,7 @@ class LocalDatabase(object):
                     installation_date date,
                     last_update_time date,
                     lifetime_energy float
-            );""" % self.site_table
+            );""" % _check(self.site_table)
         return self._cursor.execute(sql)
 
     def _create_data_table(self, name):
@@ -56,7 +62,7 @@ class LocalDatabase(object):
                     time time,
                     value float,
                     site_id integer
-            );""" % name
+            );""" % _check(name)
         return self._cursor.execute(sql)
 
     def create(self):
