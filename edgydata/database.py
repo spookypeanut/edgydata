@@ -42,6 +42,7 @@ class LocalDatabase(object):
 
     def destroy(self):
         if self.is_present():
+            self._conn.close()
             os.remove(self._dbpath)
         else:
             print("No database present at %s" % self._dbpath)
