@@ -84,9 +84,10 @@ class LocalDatabase(object):
         results = []
         for key in attrs:
             results.append(deets[key])
-        cmd = "INSERT INTO %s VALUES (%s, '%s', %s, '%s', '%s', %s)"
-        cmd = cmd % tuple([self.site_table] + results)
-        print(cmd)
+        sql = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?)"
+        sql = sql % _check(self.site_table)
+        self._cursor.execute(sql, results)
+        self._conn.commit()
 
     def _store_results_in_db(self, site_id, results):
         """ Store output from get_all_power_details into the local database """
