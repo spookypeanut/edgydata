@@ -1,6 +1,6 @@
 from copy import deepcopy
 from edgydata.base import AbstractSolarEdge, BASE_URL, ResponseError
-from edgydata.time import date_from_string, datetime_to_string
+from edgydata.lib import date_from_string, datetime_to_string
 from datetime import timedelta
 
 
@@ -33,7 +33,8 @@ def _combine_power_details(first, second):
         return_dict["meters"].append({"type": type_, "values": toupdate})
     return return_dict
 
-class Site(AbstractSolarEdge):
+
+class Site(object):
     def __init__(self, api_key, site_id):
         AbstractSolarEdge.__init__(self, api_key)
         self._site_id = site_id
@@ -45,13 +46,12 @@ class Site(AbstractSolarEdge):
 
     def _call(self, function, data=None, top_level=None):
         if data is None:
-            response = self._raw_call(self._get_url(function), {})
+            response = remote_call(self._get_url(function), {})
         else:
-            response = self._raw_call(self._get_url(function), data)
+            response = remote_call(self._get_url(function), data)
         if top_level is None:
             return response[function]
         return response[top_level]
-
 
     def get_details(self):
         return self._call("details")
