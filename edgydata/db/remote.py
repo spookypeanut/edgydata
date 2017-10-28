@@ -21,7 +21,9 @@ class Remote(object):
         else:
             self._api_key = api_key
 
-    def _remote_call(self, sub_url, data):
+    def _remote_call(self, sub_url, data=None):
+        if data is None:
+            data = {}
         url = "%s/%s" % (BASE_URL, sub_url)
         data_with_api = deepcopy(data)
         data_with_api.update({"api_key": self._api_key})
@@ -35,7 +37,7 @@ class Remote(object):
         """ Get all the site ids of all the sites connected with this SolarEdge
         account
         """
-        data = self._remote_call("sites/list", {})
+        data = self._remote_call("sites/list")
         ids = [a["id"] for a in data["sites"]["site"]]
         # Return this as a list, in the same order as the API gives them
         return ids
