@@ -90,3 +90,15 @@ class Remote(object):
                   "end_date": _date_from_string(raw_end),
                   "peak_power": raw["peakPower"]}
         return Site(**kwargs)
+
+    def get_usage(self, site_id=None, start=None, end=None):
+        # This is just a wrapper around the private _get_usage that
+        # sanitizes the parameters
+        if site_id is None:
+            site_id = self._get_site_id()
+        site = self.get_site(site_id)
+        if start is None:
+            start = site.start_date
+        if end is None:
+            end = site.end_date
+        return self._get_usage(site_id, start, end)
