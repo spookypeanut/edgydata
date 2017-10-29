@@ -40,6 +40,16 @@ class Remote(object):
             raise ResponseError("API call failed: %s" % response.reason)
         return response.json()
 
+    def _get_site_id(self):
+        """ A convenience method to select the only site id if there is only
+        one. If there are more than one, raises an exception.
+        """
+        ids = self._get_site_ids()
+        if len(ids) == 1:
+            return ids[0]
+        msg = "More than one site found: please use get_sites() and choose"
+        raise ValueError(msg)
+
     def _get_site_ids(self):
         """ Get all the site ids of all the sites connected with this SolarEdge
         account
@@ -56,10 +66,12 @@ class Remote(object):
         for site_id in self._get_site_ids():
             yield self.get_site(site_id)
 
-    def get_site(self, site_id):
+    def get_site(self, site_id=None):
         """ Return a Site object from a given site id, by querying the details
         from the SolarEdge API
         """
+        if site_id is None:
+            site_id = self._get_site_id()
         sub_url = "site/%s/details.json" % site_id
         result = self._remote_call(sub_url)
         raw = result["details"]
