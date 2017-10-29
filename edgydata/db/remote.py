@@ -7,12 +7,20 @@ from edgydata.data import Site
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 def _date_to_string(input_date):
     return input_date.strftime(DATE_FORMAT)
 
+
 def _date_from_string(input_string):
     return datetime.strptime(input_string, DATE_FORMAT).date()
+
+
+def _datetime_to_string(input_datetime):
+    return input_datetime.strftime(DATETIME_FORMAT)
+
 
 class ResponseError(IOError):
     """ The response from SolarEdge was not in the form we expected """
