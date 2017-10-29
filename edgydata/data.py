@@ -20,3 +20,11 @@ class Usage(object):
         self.imported = imported
         self.exported = exported
         self.self_used = self_used
+
+    @property
+    def generated(self):
+        return self.exported + self.self_used
+
+    @property
+    def consumed(self):
+        return self.imported + self.self_used
