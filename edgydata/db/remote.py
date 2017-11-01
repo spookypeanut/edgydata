@@ -116,13 +116,14 @@ class Remote(object):
         return self._get_usage(site_id, start, end)
 
     def _get_usage(self, site_id, start, end):
+        return_data = []
         if (end - start).days > 28:
-            middle = start + timedelta(days=1)
-            # Do two lots, recursively, and combine
+            middle = end - timedelta(days=27)
+            return_data = self._get_usage(site_id, start, middle)
         else:
-            middle = end
-        data = {"startTime": _datetime_to_string(start),
-                "endTime": _datetime_to_string(middle)}
+            middle = start
+        data = {"startTime": _datetime_to_string(middle),
+                "endTime": _datetime_to_string(end)}
         sub_url = "site/%s/powerDetails.json" % site_id
         raw = self._remote_call(sub_url, data)["powerDetails"]
         meters = [m["type"] for m in raw["meters"]]
@@ -136,7 +137,6 @@ class Remote(object):
         duration = TIMEUNITS[raw["timeUnit"]]
         units = POWERUNITS[raw["unit"]]
         datedata = {}
-        return_data = []
         for eachdate in dates:
             datedata[eachdate] = {}
             for eachm in meters:

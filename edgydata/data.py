@@ -23,3 +23,7 @@ class Usage(object):
         self.imported = imported
         self.exported = exported
         self.self_consumed = self_consumed
+
+    def __repr__(self):
+        return "<Usage for %s minutes from %s>" % (self.duration,
+                                                   self.start_time)
