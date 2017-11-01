@@ -1,13 +1,21 @@
 import os
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from copy import deepcopy
 
-from edgydata.data import Site
+from edgydata.data import Site, Usage
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+# SolarEdge returns its values in a strange way. These next globals help us
+# decode those
+# Number of minutes in the listed time units
+TIMEUNITS = {"QUARTER_OF_AN_HOUR": 15}
+POWERUNITS = {"W": 1, "kW": 1000}
+LOOKUP = {"Consumption": "consumed", "FeedIn": "exported",
+          "Production": "generated", "Purchased": "imported",
+          "SelfConsumption": "self_consumed"}
 
 
 def _date_to_string(input_date):
@@ -20,6 +28,10 @@ def _date_from_string(input_string):
 
 def _datetime_to_string(input_datetime):
     return input_datetime.strftime(DATETIME_FORMAT)
+
+
+def _datetime_from_string(input_string):
+    return datetime.strptime(input_string, DATETIME_FORMAT)
 
 
 class ResponseError(IOError):
@@ -102,3 +114,48 @@ class Remote(object):
         if end is None:
             end = site.end_date
         return self._get_usage(site_id, start, end)
+
+    def _get_usage(self, site_id, start, end):
+        if (end - start).days > 28:
+            middle = start + timedelta(days=1)
+            # Do two lots, recursively, and combine
+        else:
+            middle = end
+        data = {"startTime": _datetime_to_string(start),
+                "endTime": _datetime_to_string(middle)}
+        sub_url = "site/%s/powerDetails.json" % site_id
+        raw = self._remote_call(sub_url, data)["powerDetails"]
+        meters = [m["type"] for m in raw["meters"]]
+        # This next sorry section is just to get a list of all times in
+        # the data. I could probably just get them from one of the
+        # meters, but I've always been one for obsessive over-caution.
+        alldump = []
+        for dump in [m["values"] for m in raw["meters"]]:
+            alldump.extend(dump)
+        dates = set([d["date"] for d in alldump])
+        duration = TIMEUNITS[raw["timeUnit"]]
+        units = POWERUNITS[raw["unit"]]
+        datedata = {}
+        return_data = []
+        for eachdate in dates:
+            datedata[eachdate] = {}
+            for eachm in meters:
+                meterdata = [r for r in raw["meters"] if r["type"] == eachm][0]
+                datum = [m for m in meterdata["values"] if
+                         m["date"] == eachdate][0]
+                if "value" in datum:
+                    # Convert value into Watts, in case it's not already
+                    datum = datum["value"] * units
+                else:
+                    # For some reason, SolarEdge don't give a value when
+                    # it's zero
+                    datum = 0
+                datedata[eachdate][eachm] = datum
+        for date, data in datedata.items():
+            kwargs = {}
+            kwargs["start_time"] = _datetime_from_string(date)
+            kwargs["duration"] = duration
+            for start, end in LOOKUP.items():
+                kwargs[end] = data[start]
+            return_data.append(Usage(**kwargs))
+        return return_data
