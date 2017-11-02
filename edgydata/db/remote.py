@@ -99,6 +99,7 @@ class Remote(object):
         raw_start = raw["installationDate"]
         raw_end = raw["lastUpdateTime"]
         kwargs = {"site_id": site_id,
+                  "name": raw["name"],
                   "start_date": _date_from_string(raw_start),
                   "end_date": _date_from_string(raw_end),
                   "peak_power": raw["peakPower"]}
