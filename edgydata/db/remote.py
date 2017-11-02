@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from copy import deepcopy
 
 from edgydata.data import Site, Usage
+from edgedata.constants import POWER
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
@@ -13,9 +14,9 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # Number of minutes in the listed time units
 TIMEUNITS = {"QUARTER_OF_AN_HOUR": 15}
 POWERUNITS = {"W": 1, "kW": 1000}
-LOOKUP = {"Consumption": "consumed", "FeedIn": "exported",
-          "Production": "generated", "Purchased": "imported",
-          "SelfConsumption": "self_consumed"}
+LOOKUP = {"Consumption": POWER.consumed, "FeedIn": POWER.exported,
+          "Production": POWER.generated, "Purchased": POWER.imported,
+          "SelfConsumption": POWER.self_consumed}
 
 
 def _date_to_string(input_date):
