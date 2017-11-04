@@ -8,6 +8,10 @@ _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "DATE"}
 
 
+def _date_to_int(mydate):
+    return _datetime_to_int(datetime.combine(mydate, datetime.min.time()))
+
+
 def _datetime_to_int(mytime):
     return int((mytime - datetime(1970, 1, 1)).total_seconds())
 
@@ -20,7 +24,7 @@ def _int_to_date(myint):
     return _int_to_datetime(myint).date()
 
 
-_CONVERTER = {date: (_datetime_to_int, _int_to_date),
+_CONVERTER = {date: (_date_to_int, _int_to_date),
               datetime: (_datetime_to_int, _int_to_datetime)}
 
 
