@@ -80,7 +80,9 @@ class Local(object):
         table_name = _check(self.site_table)
 
         columns = []
-        for myattr, mytype in Site.attr_types().items():
+        # We need to make sure we get the order correct
+        for myattr in Site.list_attrs():
+            mytype = Site.attr_types()[myattr]
             columns.append("%s %s" % (myattr, _TYPE_LOOKUP[mytype]))
         sql = ["CREATE TABLE %s (" % table_name,
                ",\n".join(columns),
