@@ -1,6 +1,12 @@
 import os
 import sqlite3
-from edgydata.constants import POWER, POWER_TYPES
+from datetime import date, datetime
+from edgydata.constants import POWER_TYPES
+from edgydata.data import Site
+
+_TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
+                date: "DATE"}
+
 
 
 def _check(mystr):
@@ -52,27 +58,28 @@ class Local(object):
             print("No database present at %s" % self._dbpath)
 
     def _create_site_table(self):
-        sql = """ CREATE TABLE %s (
-                    id INTEGER NOT NULL PRIMARY KEY,,
-                    name STRING,
-                    peak_power FLOAT,
-                    start_date DATE,
-                    end_date DATE
-            );""" % _check(self.site_table)
-        return self._cursor.execute(sql)
+        table_name = _check(self.site_table)
+
+        columns = []
+        for myattr, mytype in Site.attr_types().items():
+            columns.append("%s %s" % (myattr, _TYPE_LOOKUP[mytype]))
+        sql = ["CREATE TABLE %s (" % table_name,
+               ",\n".join(columns),
+               ", PRIMARY KEY (site_id))"]
+        return self._execute("\n".join(sql))
 
     def _create_power_table(self):
         columns = []
         for col in POWER_TYPES:
-            columns.append("%s FLOAT," % _check(col))
+            columns.append("%s FLOAT" % _check(col))
 
         sql = """ CREATE TABLE %s (
                     id INT NOT NULL PRIMARY KEY,
                     time TIME,
                     duration INT,
-                    %s
+                    %s,
                     site_id INTEGER
-            );""" % (_check(self.power_table), "\n".join(columns))
+            );""" % (_check(self.power_table), ",\n".join(columns))
         return self._execute(sql)
 
     def create(self):
