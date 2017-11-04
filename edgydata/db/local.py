@@ -25,17 +25,21 @@ class Local(object):
         self._conn = sqlite3.connect(self._dbpath)
         self._cursor = self._conn.cursor()
 
-    def _query(self, sql, variables=None):
+    def _execute(self, sql, variables=None):
+        print("Executing:")
+        print(sql)
         if variables is None:
             return_value = self._cursor.execute(sql)
         else:
+            print("Variables:")
+            print(variables)
             return_value = self._cursor.execute(sql, variables)
         self._conn.commit()
         return return_value
 
     def is_present(self):
         sql = "SELECT name FROM sqlite_master WHERE type='table'"
-        self._cursor.execute(sql)
+        self._execute(sql)
         if self._cursor.fetchall() == []:
             return False
         return True
@@ -69,7 +73,7 @@ class Local(object):
                     %s
                     site_id INTEGER
             );""" % (_check(self.power_table), "\n".join(columns))
-        return self._cursor.execute(sql)
+        return self._execute(sql)
 
     def create(self):
         assert not self.is_present()
@@ -91,7 +95,7 @@ class Local(object):
             results.append(deets[key])
         sql = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?)"
         sql = sql % _check(self.site_table)
-        self._cursor.execute(sql, results)
+        self._execute(sql, results)
         self._conn.commit()
 
     def _store_results_in_db(self, site_id, results):
