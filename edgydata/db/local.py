@@ -49,24 +49,25 @@ class Local(object):
 
     def _create_site_table(self):
         sql = """ CREATE TABLE %s (
-                    id integer,
-                    name string,
-                    peak_power float,
-                    start_date date,
-                    end_date date
+                    id INTEGER NOT NULL PRIMARY KEY,,
+                    name STRING,
+                    peak_power FLOAT,
+                    start_date DATE,
+                    end_date DATE
             );""" % _check(self.site_table)
         return self._cursor.execute(sql)
 
     def _create_power_table(self):
         columns = []
         for col in POWER_TYPES:
-            columns.append("%s float," % _check(col))
+            columns.append("%s FLOAT," % _check(col))
 
         sql = """ CREATE TABLE %s (
-                    time time,
-                    duration int,
+                    id INT NOT NULL PRIMARY KEY,
+                    time TIME,
+                    duration INT,
                     %s
-                    site_id integer
+                    site_id INTEGER
             );""" % (_check(self.power_table), "\n".join(columns))
         return self._cursor.execute(sql)
 
