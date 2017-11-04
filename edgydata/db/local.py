@@ -113,15 +113,14 @@ class Local(object):
         pass
 
     def _add_site_to_db(self, site):
-        deets = site.get_details()
-        # NB lifetime_energy doesn't come from the same place, so using
-        # peakPower as placeholder
-        attrs = ["id", "name", "peakPower", "installationDate",
-                 "lastUpdateTime", "peakPower"]
         results = []
-        for key in attrs:
-            results.append(deets[key])
-        sql = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?)"
+        for key in site.list_attrs():
+            value = getattr(site, key)
+            if value.__class__ in _CONVERTER:
+                results.append(_CONVERTER[value.__class__][0](value))
+            else:
+                results.append(value)
+        sql = "INSERT INTO %s VALUES (?, ?, ?, ?, ?)"
         sql = sql % _check(self.site_table)
         self._execute(sql, results)
         self._conn.commit()
