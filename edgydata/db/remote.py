@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from copy import deepcopy
 
 from edgydata.data import Site, Usage
-from edgedata.constants import POWER
+from edgydata.constants import POWER
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
