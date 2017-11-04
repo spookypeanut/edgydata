@@ -8,6 +8,21 @@ _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "DATE"}
 
 
+def _datetime_to_int(mytime):
+    return int((mytime - datetime(1970, 1, 1)).total_seconds())
+
+
+def _int_to_datetime(myint):
+    return datetime.fromtimestamp(myint)
+
+
+def _int_to_date(myint):
+    return _int_to_datetime(myint).date()
+
+
+_CONVERTER = {date: (_datetime_to_int, _int_to_date),
+              datetime: (_datetime_to_int, _int_to_datetime)}
+
 
 def _check(mystr):
     if mystr != mystr.translate(None, ")(][;,"):
