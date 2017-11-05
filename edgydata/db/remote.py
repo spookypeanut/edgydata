@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
+from edgydata.db.abstract import Abstract as AbstractDB
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
@@ -39,8 +40,9 @@ class ResponseError(IOError):
     """ The response from SolarEdge was not in the form we expected """
 
 
-class Remote(object):
+class Remote(AbstractDB):
     def __init__(self, api_key=None):
+        AbstractDB.__init__(self)
         if api_key is None:
             try:
                 self._api_key = os.environ["SOLAREDGEAPI"]
