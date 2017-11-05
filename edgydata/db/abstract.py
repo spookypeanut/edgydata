@@ -1,7 +1,7 @@
 import time
 
 
-class AbstractDB(object):
+class Abstract(object):
     """ An abstract class that the remote, local and hybrid dbs can inherit
     from. This doesn't contain a lot as there is little overlap between all
     three.
