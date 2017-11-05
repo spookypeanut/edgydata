@@ -27,7 +27,7 @@ class Site(object):
         return cls._types
 
 
-class Usage(object):
+class PowerPeriod(object):
     """ An object that represents a single entry of electricity generation /
     usage data.
     """
@@ -43,5 +43,5 @@ class Usage(object):
         self.self_consumed = self_consumed
 
     def __repr__(self):
-        return "<Usage for %s minutes from %s>" % (self.duration,
-                                                   self.start_time)
+        return "<PowerPeriod for %s minutes from %s>" % (self.duration,
+                                                         self.start_time)

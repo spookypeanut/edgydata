@@ -3,7 +3,7 @@ import requests
 from datetime import datetime, timedelta
 from copy import deepcopy
 
-from edgydata.data import Site, Usage
+from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
 
 BASE_URL = "https://monitoringapi.solaredge.com"
@@ -159,5 +159,5 @@ class Remote(object):
             kwargs["duration"] = duration
             for start, end in LOOKUP.items():
                 kwargs[end] = data[start]
-            return_data.append(Usage(**kwargs))
+            return_data.append(PowerPeriod(**kwargs))
         return return_data
