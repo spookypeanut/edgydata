@@ -31,8 +31,9 @@ class Usage(object):
     """ An object that represents a single entry of electricity generation /
     usage data.
     """
-    def __init__(self, start_time, duration, generated, consumed, imported,
-                 exported, self_consumed):
+    def __init__(self, site_id, start_time, duration, generated, consumed,
+                 imported, exported, self_consumed):
+        self.site_id = site_id
         self.start_time = start_time
         self.duration = duration
         self.generated = generated

@@ -154,7 +154,7 @@ class Remote(object):
                     datum = 0
                 datedata[eachdate][eachm] = datum
         for date, data in datedata.items():
-            kwargs = {}
+            kwargs = {"site_id": site_id}
             kwargs["start_time"] = _datetime_from_string(date)
             kwargs["duration"] = duration
             for start, end in LOOKUP.items():
