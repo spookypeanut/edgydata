@@ -128,8 +128,8 @@ class Local(AbstractDB):
         return self._execute(sql)
 
     def create(self):
-        assert not self.is_present()
         try:
+            assert not self.is_present()
             self._create_site_table()
             self._create_power_table()
         except sqlite3.ProgrammingError:
