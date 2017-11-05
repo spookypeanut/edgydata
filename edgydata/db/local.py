@@ -150,3 +150,15 @@ class Local(AbstractDB):
         sql = sql % _check(self.site_table)
         self._execute(sql, results)
         self._conn.commit()
+
+    def add_power(self, power):
+        results = [power.site_id, _datetime_to_int(power.start_time),
+                   power.duration]
+        for col in POWER_TYPES:
+            value = getattr(power, col)
+            results.append(value)
+        sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
+        more_args = ", ".join(["?"] * len(POWER_TYPES))
+        sql = sql % (_check(self.power_table), more_args)
+        self._execute(sql, results)
+        self._conn.commit()
