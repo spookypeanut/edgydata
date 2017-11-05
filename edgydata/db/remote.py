@@ -161,5 +161,9 @@ class Remote(AbstractDB):
             kwargs["duration"] = duration
             for start, end in LOOKUP.items():
                 kwargs[end.name] = data[start]
-            return_data.append(PowerPeriod(**kwargs))
+            try:
+                return_data.append(PowerPeriod(**kwargs))
+            except Exception:
+                self.debug(kwargs)
+                raise
         return return_data
