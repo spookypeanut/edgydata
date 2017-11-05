@@ -136,10 +136,7 @@ class Local(AbstractDB):
             self._connect_db()
             self.create()
 
-    def update(self):
-        pass
-
-    def _add_site_to_db(self, site):
+    def add_site(self, site):
         results = []
         for key in site.list_attrs():
             value = getattr(site, key)
@@ -151,6 +148,3 @@ class Local(AbstractDB):
         sql = sql % _check(self.site_table)
         self._execute(sql, results)
         self._conn.commit()
-
-    def _store_results_in_db(self, site_id, results):
-        """ Store output from get_all_power_details into the local database """
