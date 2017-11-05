@@ -58,7 +58,7 @@ class Local(AbstractDB):
     site_table = "site"
     power_table = "power"
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, debug=True):
         # If we get given a path, use it, but we can make up our own
         if path is None:
             self._dbpath = get_db_path()
@@ -66,11 +66,12 @@ class Local(AbstractDB):
             self._dbpath = path
         self._conn = sqlite3.connect(self._dbpath)
         self._cursor = self._conn.cursor()
+        AbstractDB.__init__(self, debug=debug)
 
     def _execute(self, sql, variables=None):
         """ Execute an sql query, after optionally printing it """
-        print("Executing:")
-        print(sql)
+        self.debug("Executing:")
+        self.debug(sql)
         if variables is None:
             return_value = self._cursor.execute(sql)
         else:
