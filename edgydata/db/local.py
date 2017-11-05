@@ -6,7 +6,7 @@ from edgydata.data import Site
 from edgydata.db.abstract import Abstract as AbstractDB
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
-                date: "DATE"}
+                date: "INTEGER"}
 
 
 def _date_to_int(mydate):
