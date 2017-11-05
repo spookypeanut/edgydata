@@ -117,12 +117,14 @@ class Local(AbstractDB):
             columns.append("%s FLOAT" % _check(col))
 
         sql = """ CREATE TABLE %s (
-                    id INT NOT NULL PRIMARY KEY,
-                    time TIME,
-                    duration INT,
+                    site_id INTEGER,
+                    time INTEGER,
+                    duration INTEGER,
                     %s,
-                    site_id INTEGER
-            );""" % (_check(self.power_table), ",\n".join(columns))
+                    PRIMARY KEY (site_id, time),
+                    FOREIGN KEY (site_id) REFERENCES %s (site_id)
+            );""" % (_check(self.power_table), ",\n".join(columns),
+                     _check(self.site_table))
         return self._execute(sql)
 
     def create(self):
