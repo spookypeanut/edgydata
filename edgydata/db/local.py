@@ -3,6 +3,7 @@ import sqlite3
 from datetime import date, datetime
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site
+from edgydata.db.abstract import Abstract as AbstractDB
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "DATE"}
@@ -38,7 +39,7 @@ def get_db_path():
     return os.path.join(os.environ["HOME"], "edgydata.db")
 
 
-class Local(object):
+class Local(AbstractDB):
     site_table = "site"
     power_table = "power"
 
