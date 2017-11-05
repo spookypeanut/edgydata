@@ -65,6 +65,9 @@ class Local(AbstractDB):
             self._dbpath = get_db_path()
         else:
             self._dbpath = path
+        self._connect_db()
+
+    def _connect_db(self):
         self._conn = sqlite3.connect(self._dbpath)
         self._cursor = self._conn.cursor()
 
@@ -124,9 +127,14 @@ class Local(AbstractDB):
 
     def create(self):
         assert not self.is_present()
-
-        self._create_site_table()
-        self._create_power_table()
+        try:
+            self._create_site_table()
+            self._create_power_table()
+        except sqlite3.ProgrammingError:
+            # If we've just destroyed, we need to re-connect before
+            # recreating
+            self._connect_db()
+            self.create()
 
     def update(self):
         pass
