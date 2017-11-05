@@ -160,6 +160,6 @@ class Remote(AbstractDB):
             kwargs["start_time"] = _datetime_from_string(date)
             kwargs["duration"] = duration
             for start, end in LOOKUP.items():
-                kwargs[end] = data[start]
+                kwargs[end.name] = data[start]
             return_data.append(PowerPeriod(**kwargs))
         return return_data
