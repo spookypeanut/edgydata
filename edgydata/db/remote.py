@@ -160,7 +160,15 @@ class Remote(AbstractDB):
             kwargs["start_time"] = _datetime_from_string(date)
             kwargs["duration"] = timedelta(hours=duration)
             for start, end in LOOKUP.items():
+                try:
+                    kwargs[end.name] = data[start]
+                except Exception:
+                    self.debug(date)
+                    self.debug(data)
+                    self.debug(start)
+                    self.debug(end)
                 kwargs[end.name] = data[start]
+                    raise
             try:
                 return_data.append(PowerPeriod(**kwargs))
             except Exception:
