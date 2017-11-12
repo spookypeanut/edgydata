@@ -1,4 +1,5 @@
 from datetime import date
+from edgydata.constants import POWER_TYPES
 
 
 class Site(object):
@@ -30,6 +31,7 @@ class Site(object):
 class PowerPeriod(object):
     """ An object that represents a single entry of electricity generation /
     usage data.
+    The default is average POWER (kW) over the power period. To convert to energy (kWh), use
     """
     def __init__(self, site_id, start_time, duration, generated, consumed,
                  imported, exported, self_consumed):
@@ -42,6 +44,20 @@ class PowerPeriod(object):
         self.exported = exported
         self.self_consumed = self_consumed
 
+    @classmethod
+    def _types(cls):
+        # Should already be a set, but this is a cheap way to make a
+        # copy of it
+        return set(POWER_TYPES)
+
+    @property
+    def energy(self):
+        energydict = {}
+        # To convert from average kW to kWh
+        factor = self.duration / 60
+        for eachtype in self._types():
+            energydict[eachtype] = getattr(self, eachtype) * factor
+        return energydict
     def __repr__(self):
         return "<PowerPeriod for %s minutes from %s>" % (self.duration,
                                                          self.start_time)
