@@ -58,6 +58,32 @@ class PowerPeriod(object):
         for eachtype in self._types():
             energydict[eachtype] = getattr(self, eachtype) * factor
         return energydict
+
+    def __lt__(self, other):
+        if self.start_time < other.start_time:
+            return True
+        elif self.start_time > other.start_time:
+            return False
+        for eachtype in sorted(self._types()):
+            if getattr(self, eachtype) < getattr(other, eachtype):
+                return True
+            if getattr(self, eachtype) > getattr(other, eachtype):
+                return False
+        return False
+
+    def __gt__(self, other):
+        if self.__lt__(other) or self.__eq__(other):
+            return False
+        return True
+
+    def __eq__(self, other):
+        if self.start_time != other.start_time:
+            return False
+        for eachtype in sorted(self._types()):
+            if getattr(self, eachtype) != getattr(other, eachtype):
+                return False
+        return True
+
     def __repr__(self):
         return "<PowerPeriod for %s minutes from %s>" % (self.duration,
                                                          self.start_time)
