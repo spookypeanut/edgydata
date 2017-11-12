@@ -13,7 +13,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # SolarEdge returns its values in a strange way. These next globals help us
 # decode those
 # Number of minutes in the listed time units
-TIMEUNITS = {"QUARTER_OF_AN_HOUR": 15}
+TIMEUNITS = {"QUARTER_OF_AN_HOUR": 0.25}
 POWERUNITS = {"W": 1, "kW": 1000}
 LOOKUP = {"Consumption": POWER.consumed, "FeedIn": POWER.exported,
           "Production": POWER.generated, "Purchased": POWER.imported,
