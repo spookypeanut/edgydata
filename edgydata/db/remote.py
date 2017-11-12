@@ -158,7 +158,7 @@ class Remote(AbstractDB):
         for date, data in datedata.items():
             kwargs = {"site_id": site_id}
             kwargs["start_time"] = _datetime_from_string(date)
-            kwargs["duration"] = duration
+            kwargs["duration"] = timedelta(hours=duration)
             for start, end in LOOKUP.items():
                 kwargs[end.name] = data[start]
             try:
