@@ -113,7 +113,7 @@ class Local(AbstractDB):
 
     def _create_power_table(self):
         columns = []
-        for col in POWER_TYPES:
+        for col in sorted(POWER_TYPES):
             columns.append("%s FLOAT" % _check(col))
 
         sql = """ CREATE TABLE %s (
@@ -154,7 +154,7 @@ class Local(AbstractDB):
     def add_power(self, power):
         results = [power.site_id, _datetime_to_int(power.start_time),
                    power.duration]
-        for col in POWER_TYPES:
+        for col in sorted(POWER_TYPES):
             value = getattr(power, col)
             results.append(value)
         sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
