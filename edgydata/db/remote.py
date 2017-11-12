@@ -138,8 +138,10 @@ class Remote(AbstractDB):
         for dump in [m["values"] for m in raw["meters"]]:
             alldump.extend(dump)
         dates = set([d["date"] for d in alldump])
+
         duration = TIMEUNITS[raw["timeUnit"]]
         units = POWERUNITS[raw["unit"]]
+
         datedata = {}
         for eachdate in dates:
             datedata[eachdate] = {}
