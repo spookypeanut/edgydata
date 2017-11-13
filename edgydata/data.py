@@ -92,6 +92,8 @@ class PowerPeriod(object):
         else:
             a = other
             b = self
+        if not a.start_time + a.duration == b.start_time:
+            raise ValueError("These two PowerPeriods are not consecutive")
         duration = a.duration + b.duration
         start_time = a.start_time
         mytypes = {"start_time": start_time, "duration": duration}
