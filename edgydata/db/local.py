@@ -1,12 +1,12 @@
 import os
 import sqlite3
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site
 from edgydata.db.abstract import Abstract as AbstractDB
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
-                date: "INTEGER"}
+                date: "INTEGER", timedelta: "INTEGER"}
 
 
 def _date_to_int(mydate):
@@ -18,6 +18,14 @@ def _datetime_to_int(mytime):
     """ Convert a datetime.datetime object to a unix timestamp. """
     # Apparently, this is the safest way to do it (ignoring timezones)
     return int((mytime - datetime(1970, 1, 1)).total_seconds())
+
+
+def _timedelta_to_int(mytimedelta):
+    return mytimedelta.seconds
+
+
+def _int_to_timedelta(myint):
+    return timedelta(seconds=myint)
 
 
 def _int_to_datetime(myint):
@@ -32,7 +40,8 @@ def _int_to_date(myint):
 # The converters to use to put object types into and get them out of the
 # database. First element is to put them in, second to get them out
 _CONVERTER = {date: (_date_to_int, _int_to_date),
-              datetime: (_datetime_to_int, _int_to_datetime)}
+              datetime: (_datetime_to_int, _int_to_datetime),
+              timedelta: (_timedelta_to_int, _int_to_timedelta)}
 
 
 def _check(mystr):
@@ -153,7 +162,7 @@ class Local(AbstractDB):
 
     def add_power(self, power):
         results = [power.site_id, _datetime_to_int(power.start_time),
-                   power.duration]
+                   _timedelta_to_int(power.duration)]
         for col in sorted(POWER_TYPES):
             value = getattr(power, col)
             results.append(value)

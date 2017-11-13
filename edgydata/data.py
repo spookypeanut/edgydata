@@ -31,7 +31,8 @@ class Site(object):
 class PowerPeriod(object):
     """ An object that represents a single entry of electricity generation /
     usage data.
-    The default is average POWER (kW) over the power period. To convert to energy (kWh), use
+    The default is average POWER (kW) over the power period. To convert to
+    energy (kWh), use PowerPeriod.energy
     """
     def __init__(self, site_id, start_time, duration, generated, consumed,
                  imported, exported, self_consumed):
@@ -53,10 +54,10 @@ class PowerPeriod(object):
     @property
     def energy(self):
         energydict = {}
-        # To convert from average kW to kWh
-        factor = self.duration / 60
         for eachtype in self._types():
-            energydict[eachtype] = getattr(self, eachtype) * factor
+            # To convert from average kW to kWh
+            hours = self.duration.seconds / 60 / 60
+            energydict[eachtype] = getattr(self, eachtype) * hours
         return energydict
 
     def __lt__(self, other):
@@ -85,5 +86,5 @@ class PowerPeriod(object):
         return True
 
     def __repr__(self):
-        return "<PowerPeriod for %s minutes from %s>" % (self.duration,
-                                                         self.start_time)
+        hours = 1.0 * self.duration.seconds / 60 / 60
+        return "<PowerPeriod for %sh from %s>" % (hours, self.start_time)
