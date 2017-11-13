@@ -85,6 +85,20 @@ class PowerPeriod(object):
                 return False
         return True
 
+    def __add__(self, other):
+        if self.start_time < other.start_time:
+            a = self
+            b = other
+        else:
+            a = other
+            b = self
+        duration = a.duration + b.duration
+        start_time = a.start_time
+        mytypes = {"start_time": start_time, "duration": duration}
+        for type_ in self._types():
+            mytypes[type_] = getattr(a, type_) + getattr(b, type_)
+        return PowerPeriod(**mytypes)
+
     def __repr__(self):
         hours = 1.0 * self.duration.seconds / 60 / 60
         return "<PowerPeriod for %sh from %s>" % (hours, self.start_time)
