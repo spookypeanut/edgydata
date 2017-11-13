@@ -169,7 +169,6 @@ class Remote(AbstractDB):
                     self.debug(data)
                     self.debug(start)
                     self.debug(end)
-                kwargs[end.name] = data[start]
                     raise
             try:
                 return_data.append(PowerPeriod(**kwargs))
