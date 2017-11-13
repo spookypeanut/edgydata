@@ -107,7 +107,7 @@ class Remote(AbstractDB):
                   "peak_power": raw["peakPower"]}
         return Site(**kwargs)
 
-    def get_usage(self, site_id=None, start=None, end=None):
+    def get_power(self, site_id=None, start=None, end=None):
         # This is just a wrapper around the private _get_usage that
         # sanitizes the parameters
         if site_id is None:
