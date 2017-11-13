@@ -1,4 +1,5 @@
 import os
+import sys
 import sqlite3
 from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
@@ -127,7 +128,7 @@ class Local(AbstractDB):
 
         sql = """ CREATE TABLE %s (
                     site_id INTEGER,
-                    time INTEGER,
+                    start_time INTEGER,
                     duration INTEGER,
                     %s,
                     PRIMARY KEY (site_id, time),
@@ -157,8 +158,13 @@ class Local(AbstractDB):
                 results.append(value)
         sql = "INSERT INTO %s VALUES (?, ?, ?, ?, ?)"
         sql = sql % _check(self.site_table)
-        self._execute(sql, results)
-        self._conn.commit()
+        return self._execute(sql, results)
+
+    @classmethod
+    def _power_columns(cls):
+        results = ["site_id", "start_time", "duration"]
+        results.extend(sorted(POWER_TYPES))
+        return results
 
     def add_power(self, power):
         results = [power.site_id, _datetime_to_int(power.start_time),
@@ -169,5 +175,14 @@ class Local(AbstractDB):
         sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
         more_args = ", ".join(["?"] * len(POWER_TYPES))
         sql = sql % (_check(self.power_table), more_args)
-        self._execute(sql, results)
-        self._conn.commit()
+        return self._execute(sql, results)
+
+    def get_power(self, site_id=None, start=None, end=None):
+        if start is None:
+            start = 0
+        if end is None:
+            end = sys.maxint
+        sql = "SELECT * FROM %s WHERE start_time >= %s AND start_time <= %s"
+        sql = sql % (_check(self.power_table), int(start), int(end))
+        self._execute(sql)
+        return self._cursor.fetchall()
