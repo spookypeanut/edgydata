@@ -54,16 +54,15 @@ class PowerPeriod(object):
     The default is average POWER (kW) over the power period. To convert to
     energy (kWh), use PowerPeriod.energy
     """
-    def __init__(self, site_id, start_time, duration, generated, consumed,
-                 imported, exported, self_consumed):
+    def __init__(self, site_id, start_time, duration, **kwargs):
         self.site_id = site_id
         self.start_time = start_time
         self.duration = duration
-        self.generated = generated
-        self.consumed = consumed
-        self.imported = imported
-        self.exported = exported
-        self.self_consumed = self_consumed
+        for eachtype in POWER_TYPES:
+            if eachtype not in kwargs:
+                msg = "%s not provided: expected all of %s"
+                raise ValueError(msg % (eachtype, POWER_TYPES))
+            setattr(self, eachtype, kwargs[eachtype])
 
     @classmethod
     def _types(cls):
