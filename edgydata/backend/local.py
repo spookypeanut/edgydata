@@ -131,7 +131,7 @@ class Local(AbstractDB):
                     start_time INTEGER,
                     duration INTEGER,
                     %s,
-                    PRIMARY KEY (site_id, time),
+                    PRIMARY KEY (site_id, start_time),
                     FOREIGN KEY (site_id) REFERENCES %s (site_id)
             );""" % (_check(self.power_table), ",\n".join(columns),
                      _check(self.site_table))
