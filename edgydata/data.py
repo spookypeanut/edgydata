@@ -28,6 +28,26 @@ class Site(object):
         return cls._types
 
 
+class Energy(dict):
+    def __init__(self, **kwargs):
+        for eachtype in POWER_TYPES:
+            if eachtype not in kwargs:
+                msg = "%s not provided: expected all of %s"
+                raise ValueError(msg % (eachtype, POWER_TYPES))
+        dict.__init__(self, **kwargs)
+
+    def __getattr__(self, name):
+        if name in POWER_TYPES:
+            return self[name]
+        dict.__getattr(self, name)
+
+    def __add__(self, other):
+        kwargs = {}
+        for eachtype in POWER_TYPES:
+            kwargs[eachtype] = self[eachtype] + other[eachtype]
+        return Energy(**kwargs)
+
+
 class PowerPeriod(object):
     """ An object that represents a single entry of electricity generation /
     usage data.
@@ -58,7 +78,7 @@ class PowerPeriod(object):
             # To convert from average kW to kWh
             hours = self.duration.seconds / 60 / 60
             energydict[eachtype] = getattr(self, eachtype) * hours
-        return energydict
+        return Energy(**energydict)
 
     def __lt__(self, other):
         if self.start_time < other.start_time:
