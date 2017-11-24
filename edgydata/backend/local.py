@@ -160,6 +160,9 @@ class Local(AbstractDB):
         sql = sql % _check(self.site_table)
         return self._execute(sql, results)
 
+    def get_site(self, site_id):
+        raise NotImplementedError
+
     @classmethod
     def _power_columns(cls):
         results = ["site_id", "start_time", "duration"]
