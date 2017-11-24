@@ -4,7 +4,7 @@ import sqlite3
 from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site
-from edgydata.db.abstract import Abstract as AbstractDB
+from edgydata.backend.abstract import Abstract as AbstractBE
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "INTEGER", timedelta: "INTEGER"}
@@ -59,7 +59,7 @@ def get_db_path():
     return os.path.join(os.environ["HOME"], "edgydata.db")
 
 
-class Local(AbstractDB):
+class Local(AbstractBE):
     """ A local mirror of the solar power data, stored in a sqlite database.
     The intention is that the extraction API is the same as
     `edgydata.db.remote.Remote`, but there isn't any benefit to using
@@ -69,7 +69,7 @@ class Local(AbstractDB):
     power_table = "power"
 
     def __init__(self, path=None, debug=True):
-        AbstractDB.__init__(self, debug=debug)
+        AbstractBE.__init__(self, debug=debug)
         # If we get given a path, use it, but we can make up our own
         if path is None:
             self._dbpath = get_db_path()
