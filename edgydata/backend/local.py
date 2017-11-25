@@ -3,7 +3,7 @@ import sys
 import sqlite3
 from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
-from edgydata.data import Site
+from edgydata.data import Site, PowerPeriod
 from edgydata.backend.abstract import Abstract as AbstractBE
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
@@ -187,4 +187,12 @@ class Local(AbstractBE):
         sql = "SELECT * FROM %s WHERE start_time >= %s AND start_time <= %s"
         sql = sql % (_check(self.power_table), int(start), int(end))
         self._execute(sql)
-        return self._cursor.fetchall()
+        raw_tuples = self._cursor.fetchall()
+        return_set = set()
+        columns = self._power_columns()
+        for each_tuple in raw_tuples:
+            tmp_dict = dict(zip(columns, each_tuple))
+            tmp_dict["start_time"] = _int_to_datetime(tmp_dict["start_time"])
+            tmp_dict["duration"] = _int_to_timedelta(tmp_dict["duration"])
+            return_set.add(PowerPeriod(**tmp_dict))
+        return return_set
