@@ -88,8 +88,7 @@ class Local(AbstractBE):
         if variables is None:
             return_value = self._cursor.execute(sql)
         else:
-            print("Variables:")
-            print(variables)
+            self.debug("Variables: %s" % (variables,))
             return_value = self._cursor.execute(sql, variables)
         self._conn.commit()
         return return_value
