@@ -73,7 +73,7 @@ class Remote(AbstractBE):
         msg = "More than one site found: please use get_sites() and choose"
         raise ValueError(msg)
 
-    def _get_site_ids(self):
+    def get_site_ids(self):
         """ Get all the site ids of all the sites connected with this SolarEdge
         account
         """
