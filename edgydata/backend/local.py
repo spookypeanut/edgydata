@@ -112,7 +112,7 @@ class Local(AbstractBE):
 
         columns = []
         # We need to make sure we get the order correct
-        for myattr in Site.list_attrs():
+        for myattr in self._get_site_columns():
             mytype = Site.attr_types()[myattr]
             columns.append("%s %s" % (myattr, _TYPE_LOOKUP[mytype]))
         sql = ["CREATE TABLE %s (" % table_name,
@@ -149,7 +149,7 @@ class Local(AbstractBE):
 
     def add_site(self, site):
         results = []
-        for key in site.list_attrs():
+        for key in self._get_site_columns():
             value = getattr(site, key)
             if value.__class__ in _CONVERTER:
                 results.append(_CONVERTER[value.__class__][0](value))
@@ -166,7 +166,11 @@ class Local(AbstractBE):
         raise NotImplementedError
 
     @classmethod
-    def _power_columns(cls):
+    def _get_site_columns(cls):
+        return Site.list_attrs()
+
+    @classmethod
+    def _get_power_columns(cls):
         results = ["site_id", "start_time", "duration"]
         results.extend(sorted(POWER_TYPES))
         return results
@@ -192,7 +196,7 @@ class Local(AbstractBE):
         self._execute(sql)
         raw_tuples = self._cursor.fetchall()
         return_set = set()
-        columns = self._power_columns()
+        columns = self._get_power_columns()
         for each_tuple in raw_tuples:
             tmp_dict = dict(zip(columns, each_tuple))
             tmp_dict["start_time"] = _int_to_datetime(tmp_dict["start_time"])
