@@ -159,7 +159,10 @@ class Local(AbstractBE):
         sql = sql % _check(self.site_table)
         return self._execute(sql, results)
 
-    def get_site(self, site_id):
+    def get_site(self, site_id=None):
+        raise NotImplementedError
+
+    def get_site_ids(self):
         raise NotImplementedError
 
     @classmethod
