@@ -67,7 +67,7 @@ class Remote(AbstractBE):
         """ A convenience method to select the only site id if there is only
         one. If there are more than one, raises an exception.
         """
-        ids = self._get_site_ids()
+        ids = self.get_site_ids()
         if len(ids) == 1:
             return ids[0]
         msg = "More than one site found: please use get_sites() and choose"
