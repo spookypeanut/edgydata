@@ -82,13 +82,6 @@ class Remote(AbstractBE):
         # Return this as a list, in the same order as the API gives them
         return ids
 
-    def get_sites(self):
-        """ Return Site objects for all the sites connected with this SolarEdge
-        account
-        """
-        for site_id in self._get_site_ids():
-            yield self.get_site(site_id)
-
     def get_site(self, site_id=None):
         """ Return a Site object from a given site id, by querying the details
         from the SolarEdge API
