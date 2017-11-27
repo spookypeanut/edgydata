@@ -11,13 +11,12 @@ class Site(object):
     _types = {"site_id": int, "name": str, "start_date": date, "end_date": date,
               "peak_power": float}
 
-    def __init__(self, site_id, name, start_date, end_date, peak_power=0):
-        # ... and here
-        self.site_id = site_id
-        self.name = name
-        self.start_date = start_date
-        self.end_date = end_date
-        self.peak_power = peak_power
+    def __init__(self, **kwargs):
+        for eachattr in self.list_attrs():
+            if eachattr not in kwargs:
+                msg = "Site needs to be initialized with %s"
+                raise AttributeError(msg % eachattr)
+            setattr(self, eachattr, kwargs[eachattr])
 
     @classmethod
     def list_attrs(cls):
@@ -26,6 +25,12 @@ class Site(object):
     @classmethod
     def attr_types(cls):
         return cls._types
+
+    def __eq__(self, other):
+        for attr in self.list_attrs():
+            if getattr(self, attr) != getattr(other, attr):
+                return False
+        return True
 
 
 class Energy(dict):
