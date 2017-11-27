@@ -162,10 +162,28 @@ class Local(AbstractBE):
         return self._execute(sql, results)
 
     def get_site(self, site_id=None):
-        raise NotImplementedError
+        sql = "SELECT * FROM %s WHERE site_id = ?"
+        sql = sql % _check(self.site_table)
+        self._execute(sql, site_id)
+        raw_tuples = self._cursor.fetchall()
+        if len(raw_tuples) == 0:
+            raise ValueError("Site %s not found in local database" % site_id)
+        if len(raw_tuples) != 1:
+            # This should never happen, since site_id is the primary key
+            raise ValueError("Some seriously weird shit happened")
+        raw_tuple = list(raw_tuples)[0]
+        columns = self._get_site_columns()
+        tmp_dict = dict(zip(columns, raw_tuple))
+        tmp_dict["start_date"] = _int_to_date(tmp_dict["start_date"])
+        tmp_dict["end_date"] = _int_to_date(tmp_dict["end_date"])
+        return Site(**tmp_dict)
 
     def get_site_ids(self):
-        raise NotImplementedError
+        sql = "SELECT DISTINCT(site_id) FROM %s"
+        sql = sql % _check(self.site_table)
+        self._execute(sql)
+        raw_tuples = self._cursor.fetchall()
+        return set([i[0] for i in raw_tuples])
 
     @classmethod
     def _get_site_columns(cls):
