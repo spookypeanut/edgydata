@@ -97,9 +97,7 @@ class PowerPeriod(object):
         return False
 
     def __gt__(self, other):
-        if self.__lt__(other) or self.__eq__(other):
-            return False
-        return True
+        return other.__lt__(self)
 
     def __eq__(self, other):
         if self.start_time != other.start_time:
