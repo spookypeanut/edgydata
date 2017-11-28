@@ -15,4 +15,24 @@ class Hybrid(AbstractBE):
         self._local_be = LocalBE(path=local_path)
 
     def get_power(self, site_id=None, start=None, end=None):
-        raise NotImplementedError
+        min_local, max_local = self._local_be.get_time_limits(site_id=site_id)
+        if start is not None and end is not None:
+            if min_local < start and max_local > end:
+                return self._local_be.get_power(site_id=site_id,
+                                                start=start, end=end)
+        self._update_power(site_id=site_id, start=start, end=end)
+        return self._local_be.get_power(site_id=site_id, start=start, end=end)
+
+    def _update_power(self, site_id=None, start=None, end=None):
+        min_loc, max_loc = self._local_be.get_time_limits(site_id=site_id)
+        min_rem, max_rem = self._remote_be.get_time_limits(site_id=site_id)
+        retrieved = []
+        if start is None or start < min_loc:
+            pp = self._remote_be.get_power(site_id=site_id,
+                                           start=start, end=min_loc)
+            retrieved.extend(pp)
+        if end is None or end > max_loc:
+            pp = self._remote_be.get_power(site_id=site_id,
+                                           start=max_loc, end=end)
+            retrieved.extend(pp)
+        self._local_be.add_power(retrieved)
