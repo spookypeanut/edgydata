@@ -223,3 +223,25 @@ class Local(AbstractBE):
             tmp_dict["duration"] = _int_to_timedelta(tmp_dict["duration"])
             return_set.add(PowerPeriod(**tmp_dict))
         return return_set
+
+    def _get_min_time(self, site_id=None):
+        sql = "SELECT MIN(start_time) FROM %s" % _check(self.power_table)
+        if site_id is not None:
+            sql += " WHERE site_id == ?"
+        self._execute(sql, site_id)
+        as_int = self._cursor.fetchone()[0]
+        return _int_to_datetime(as_int)
+
+    def _get_max_time(self, site_id=None):
+        sql = "SELECT MAX(start_time), duration FROM %s"
+        if site_id is not None:
+            sql += " WHERE site_id == ?"
+        sql = sql % _check(self.power_table)
+        # Luckily, if site_id is None, variables gets passed as None
+        self._execute(sql, site_id)
+        start_time, duration = self._cursor.fetchone()
+        return _int_to_datetime(start_time + duration)
+
+    def get_time_limits(self, site_id=None):
+        return (self._get_min_time(site_id=site_id),
+                self._get_max_time(site_id=site_id))
