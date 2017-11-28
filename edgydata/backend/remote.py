@@ -100,6 +100,10 @@ class Remote(AbstractBE):
                   "peak_power": raw["peakPower"]}
         return Site(**kwargs)
 
+    def get_time_limits(self, site_id=None):
+        site = self.get_site(site_id=site_id)
+        return (site.start_date, site.end_date)
+
     def get_power(self, site_id=None, start=None, end=None):
         # This is just a wrapper around the private _get_usage that
         # sanitizes the parameters
