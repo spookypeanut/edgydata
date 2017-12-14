@@ -88,6 +88,7 @@ class Local(AbstractBE):
         if variables is None:
             return_value = self._cursor.execute(sql)
         else:
+            # TODO: Check if it's a tuple / iterable
             if not isinstance(variables, list):
                 variables = [variables]
             self.debug("Variables: %s" % (variables,))
@@ -195,16 +196,29 @@ class Local(AbstractBE):
         results.extend(sorted(POWER_TYPES))
         return results
 
+    def _has_power(self, power):
+        if self.get_power(site_id=power.site_id, start=power.start_time,
+                          end=power.start_time):
+            return True
+        return False
+
     def add_power(self, power):
-        results = [power.site_id, _datetime_to_int(power.start_time),
-                   _timedelta_to_int(power.duration)]
-        for col in sorted(POWER_TYPES):
-            value = getattr(power, col)
-            results.append(value)
-        sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
-        more_args = ", ".join(["?"] * len(POWER_TYPES))
-        sql = sql % (_check(self.power_table), more_args)
-        return self._execute(sql, results)
+        print("add_power(%s)" % power)
+        # TODO: do all rows in one SQL query
+        for eachpower in power:
+            if self._has_power(eachpower):
+                print("Warning: %s skipped as already present")
+                continue
+            results = [eachpower.site_id,
+                       _datetime_to_int(eachpower.start_time),
+                       _timedelta_to_int(eachpower.duration)]
+            for col in sorted(POWER_TYPES):
+                value = getattr(eachpower, col)
+                results.append(value)
+            sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
+            more_args = ", ".join(["?"] * len(POWER_TYPES))
+            sql = sql % (_check(self.power_table), more_args)
+            self._execute(sql, results)
 
     def get_power(self, site_id=None, start=None, end=None):
         if start is None:
