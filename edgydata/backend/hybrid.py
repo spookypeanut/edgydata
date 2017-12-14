@@ -44,12 +44,12 @@ class Hybrid(AbstractBE):
         min_rem, max_rem = self._remote_be.get_time_limits(site_id=site_id)
         retrieved = []
         if start is None or start < min_loc:
-            print("Getting from %s to %s" % (start, min_loc))
+            self.debug("Getting from %s to %s" % (start, min_loc))
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=start, end=min_loc)
             retrieved.extend(pp)
         if end is None or end > max_loc:
-            print("Getting from %s to %s" % (max_loc, end))
+            self.debug("Getting from %s to %s" % (max_loc, end))
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=max_loc, end=end)
             retrieved.extend(pp)

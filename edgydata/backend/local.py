@@ -108,7 +108,7 @@ class Local(AbstractBE):
             self._conn.close()
             os.remove(self._dbpath)
         else:
-            print("No database present at %s" % self._dbpath)
+            self.warning("No database present at %s" % self._dbpath)
 
     def _create_site_table(self):
         table_name = _check(self.site_table)
@@ -203,11 +203,10 @@ class Local(AbstractBE):
         return False
 
     def add_power(self, power):
-        print("add_power(%s)" % power)
         # TODO: do all rows in one SQL query
         for eachpower in power:
             if self._has_power(eachpower):
-                print("Warning: %s skipped as already present" % eachpower)
+                self.warning("%s skipped as already present" % eachpower)
                 continue
             results = [eachpower.site_id,
                        _datetime_to_int(eachpower.start_time),

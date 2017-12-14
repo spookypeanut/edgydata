@@ -60,7 +60,7 @@ class Remote(AbstractBE):
         data_with_api.update({"api_key": self._api_key})
         response = requests.get(url, params=data_with_api)
         if not response.ok:
-            print(response.content)
+            self.warning(response.content)
             raise ResponseError("API call failed: %s" % response.reason)
         return response.json()
 
