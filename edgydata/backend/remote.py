@@ -6,6 +6,7 @@ from copy import deepcopy
 from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
 from edgydata.backend.abstract import Abstract as AbstractBE
+from edgydata.lib import date_to_datetime
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 DATE_FORMAT = "%Y-%m-%d"
@@ -111,9 +112,9 @@ class Remote(AbstractBE):
             site_id = self._get_site_id()
         site = self.get_site(site_id)
         if start is None:
-            start = site.start_date
+            start = date_to_datetime(site.start_date)
         if end is None:
-            end = site.end_date
+            end = date_to_datetime(site.end_date + timedelta(days=1))
         return self._get_usage(site_id, start, end)
 
     def _get_usage(self, site_id, start, end):
