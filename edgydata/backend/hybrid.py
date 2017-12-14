@@ -35,15 +35,35 @@ class Hybrid(AbstractBE):
         return self._local_be.get_power(site_id=site_id, start=start, end=end)
 
     def _update_power(self, site_id=None, start=None, end=None):
+        # Let's get a round number of days, just to make things cleaner
+        if start is not None:
+            start = get_midnight_before(start)
+        if end is not None:
+            end = get_midnight_after(end)
         min_loc, max_loc = self._local_be.get_time_limits(site_id=site_id)
         min_rem, max_rem = self._remote_be.get_time_limits(site_id=site_id)
         retrieved = []
         if start is None or start < min_loc:
+            print("Getting from %s to %s" % (start, min_loc))
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=start, end=min_loc)
             retrieved.extend(pp)
         if end is None or end > max_loc:
+            print("Getting from %s to %s" % (max_loc, end))
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=max_loc, end=end)
             retrieved.extend(pp)
-        self._local_be.add_power(retrieved)
+        if retrieved:
+            self._local_be.add_power(retrieved)
+
+    def get_site(self, site_id):
+        try:
+            site = self._local_be.get_site(site_id=site_id)
+        except Exception:
+            site = self._remote_be.get_site(site_id=site_id)
+            self._local_be.add_site(site)
+        return site
+
+    def get_site_ids(self):
+        # I can't think of a better way to do this
+        return self._remote_be.get_site_ids()
