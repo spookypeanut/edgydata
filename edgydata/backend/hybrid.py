@@ -20,10 +20,10 @@ class Hybrid(AbstractBE):
     locally)
     """
 
-    def __init__(self, api_key=None, local_path=None, debug=True):
+    def __init__(self, api_key=None, local_path=None, debug=False):
         AbstractBE.__init__(self, debug=debug)
-        self._remote_be = RemoteBE(api_key=api_key)
-        self._local_be = LocalBE(path=local_path)
+        self._remote_be = RemoteBE(api_key=api_key, debug=debug)
+        self._local_be = LocalBE(path=local_path, debug=debug)
 
     def get_power(self, site_id=None, start=None, end=None):
         min_local, max_local = self._local_be.get_time_limits(site_id=site_id)
