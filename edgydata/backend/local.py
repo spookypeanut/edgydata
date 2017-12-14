@@ -209,10 +209,14 @@ class Local(AbstractBE):
     def get_power(self, site_id=None, start=None, end=None):
         if start is None:
             start = 0
+        else:
+            start = _datetime_to_int(start)
         if end is None:
             end = sys.maxint
+        else:
+            end = _datetime_to_int(end)
         sql = "SELECT * FROM %s WHERE start_time >= %s AND start_time <= %s"
-        sql = sql % (_check(self.power_table), int(start), int(end))
+        sql = sql % (_check(self.power_table), start, end)
         self._execute(sql)
         raw_tuples = self._cursor.fetchall()
         return_set = set()
