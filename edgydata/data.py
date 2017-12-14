@@ -1,3 +1,5 @@
+from __future__ import division
+
 from datetime import date
 from edgydata.constants import POWER_TYPES
 
@@ -114,15 +116,21 @@ class PowerPeriod(object):
         else:
             a = other
             b = self
-        if not a.start_time + a.duration == b.start_time:
-            raise ValueError("These two PowerPeriods are not consecutive")
-        duration = a.duration + b.duration
+        if not a.site_id == b.site_id:
+            raise ValueError("These two PowerPeriods are for different sites")
         start_time = a.start_time
-        mytypes = {"start_time": start_time, "duration": duration}
+        if a.start_time + a.duration == b.start_time:
+            duration = a.duration + b.duration
+        else:
+            print("Warning: These two PowerPeriods are not consecutive")
+            duration = (b.start_time - a.start_time) + b.duration
+        mytypes = {"start_time": start_time, "duration": duration,
+                   "site_id": a.site_id}
         for type_ in self._types():
             mytypes[type_] = getattr(a, type_) + getattr(b, type_)
-        return PowerPeriod(**mytypes)
+        result = PowerPeriod(**mytypes)
+        return result
 
     def __repr__(self):
-        hours = 1.0 * self.duration.seconds / 60 / 60
+        hours = 24 * self.duration.days + self.duration.seconds / 60 / 60
         return "<PowerPeriod for %sh from %s>" % (hours, self.start_time)
