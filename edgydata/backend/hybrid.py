@@ -2,6 +2,17 @@ from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.backend.remote import Remote as RemoteBE
 from edgydata.backend.local import Local as LocalBE
 
+from datetime import timedelta
+
+
+def get_midnight_before(time):
+    return time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def get_midnight_after(time):
+    before = get_midnight_before(time)
+    return before + timedelta(days=1)
+
 
 class Hybrid(AbstractBE):
     """ All of the solar power data, stored in a local database. If what's
