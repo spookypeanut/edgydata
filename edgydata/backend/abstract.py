@@ -12,17 +12,21 @@ class Abstract(object):
     def __init__(self, debug=True):
         self._debug = debug
 
-    def debug(self, msg):
-        if not self._debug:
-            return
+    def _print(self, msg):
         print("[%s] %s" % (time.asctime(), msg))
+
+    def debug(self, msg):
+        if self._debug:
+            self._print(msg)
+
+    def warning(self, msg):
+        self._print("WARNING: %s" % msg)
 
     @abstractmethod
     def get_power(self, site_id, start, end):
         """ Get the list of PowerPeriod assets that cover the time period
         from start to end.
         """
-        return
 
     @abstractmethod
     def get_site(self, site_id):
