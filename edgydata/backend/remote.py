@@ -42,8 +42,8 @@ class ResponseError(IOError):
 
 
 class Remote(AbstractBE):
-    def __init__(self, api_key=None):
-        AbstractBE.__init__(self)
+    def __init__(self, api_key=None, debug=False):
+        AbstractBE.__init__(self, debug=debug)
         if api_key is None:
             try:
                 self._api_key = os.environ["SOLAREDGEAPI"]
