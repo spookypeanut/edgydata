@@ -207,7 +207,7 @@ class Local(AbstractBE):
         # TODO: do all rows in one SQL query
         for eachpower in power:
             if self._has_power(eachpower):
-                print("Warning: %s skipped as already present")
+                print("Warning: %s skipped as already present" % eachpower)
                 continue
             results = [eachpower.site_id,
                        _datetime_to_int(eachpower.start_time),
