@@ -114,10 +114,14 @@ class Remote(AbstractBE):
         if start is None:
             start = date_to_datetime(site.start_date)
         if end is None:
-            end = date_to_datetime(site.end_date + timedelta(days=1))
+            # Don't get an extra day: it will just give you empty data
+            end = date_to_datetime(site.end_date)
         return self._get_usage(site_id, start, end)
 
     def _get_usage(self, site_id, start, end):
+        now = datetime.now()
+        if end > now:
+            end = now
         return_data = []
         if (end - start).days > 28:
             middle = end - timedelta(days=27)

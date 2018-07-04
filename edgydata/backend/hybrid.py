@@ -2,7 +2,7 @@ from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.backend.remote import Remote as RemoteBE
 from edgydata.backend.local import Local as LocalBE
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 def get_midnight_before(time):
@@ -35,11 +35,15 @@ class Hybrid(AbstractBE):
         return self._local_be.get_power(site_id=site_id, start=start, end=end)
 
     def _update_power(self, site_id=None, start=None, end=None):
+        now = datetime.now()
         # Let's get a round number of days, just to make things cleaner
         if start is not None:
             start = get_midnight_before(start)
         if end is not None:
             end = get_midnight_after(end)
+            # Don't get imcomplete days
+            if end > now:
+                end = get_midnight_before(end)
         min_loc, max_loc = self._local_be.get_time_limits(site_id=site_id)
         min_rem, max_rem = self._remote_be.get_time_limits(site_id=site_id)
         retrieved = []
@@ -48,7 +52,10 @@ class Hybrid(AbstractBE):
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=start, end=min_loc)
             retrieved.extend(pp)
-        if end is None or end > max_loc:
+        # if min_loc is None and start is None, we already have
+        # everything there is to get
+        if (end is None or end > max_loc) and not \
+                (min_loc is None and start is None):
             self.debug("Getting from %s to %s" % (max_loc, end))
             pp = self._remote_be.get_power(site_id=site_id,
                                            start=max_loc, end=end)

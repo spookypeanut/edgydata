@@ -247,6 +247,8 @@ class Local(AbstractBE):
             sql += " WHERE site_id == ?"
         self._execute(sql, site_id)
         as_int = self._cursor.fetchone()[0]
+        if as_int is None:
+            return None
         return _int_to_datetime(as_int)
 
     def _get_max_time(self, site_id=None):
@@ -257,6 +259,8 @@ class Local(AbstractBE):
         # Luckily, if site_id is None, variables gets passed as None
         self._execute(sql, site_id)
         start_time, duration = self._cursor.fetchone()
+        if start_time is None:
+            return None
         return _int_to_datetime(start_time + duration)
 
     def get_time_limits(self, site_id=None):
