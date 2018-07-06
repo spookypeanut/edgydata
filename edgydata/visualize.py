@@ -14,7 +14,8 @@ def _pyplot(input_data, only_show, output_file):
         if only_show is not None and eachtype not in only_show:
             continue
         series = [pp.energy[eachtype] for pp in sorted_data]
-        pyplot.plot(X, series)
+        pyplot.plot(X, series, label=eachtype)
+    pyplot.legend()
     pyplot.show()
 
 CHART_TYPES = {"pyplot": _pyplot}
