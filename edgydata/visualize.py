@@ -4,11 +4,17 @@ Ways to visualise a data set:
     Line graph
 """
 import matplotlib.pyplot as pyplot
+from edgydata.constants import POWER_TYPES
 
 
 def _pyplot(input_data, only_show, output_file):
-    X = range(10)
-    pyplot.plot(X, [x*x for x in X])
+    sorted_data = sorted(input_data)
+    X = [pp.start_time for pp in sorted_data]
+    for eachtype in POWER_TYPES:
+        if only_show is not None and eachtype not in only_show:
+            continue
+        series = [pp.energy[eachtype] for pp in sorted_data]
+        pyplot.plot(X, series)
     pyplot.show()
 
 CHART_TYPES = {"pyplot": _pyplot}
