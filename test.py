@@ -5,6 +5,7 @@ provide some interesting data
 from datetime import datetime, timedelta
 from edgydata.backend.hybrid import Hybrid
 from edgydata.visualize import chart
+from edgydata.aggregate import aggregate
 
 
 def main():
@@ -20,7 +21,13 @@ def values():
     # Highest generation in a day
     # Day of the year that gives the lowest average generation
     # Day of the year that gives the highest average generation
-    pass
+    value_dict = {}
+    hdb = Hybrid(debug=True)
+    all_raw_data = hdb.get_power()
+    daily_data = aggregate(all_raw_data, period_length=timedelta(days=1))
+    highest_day = max(daily_data)
+    print(highest_day)
+    value_dict["Highest generation in a day"] = highest_day
 
 
 def graphs():
@@ -28,9 +35,8 @@ def graphs():
     data_dict = {}
     hdb = Hybrid(debug=True)
 
-    now = datetime.now()
-    twodaysago = now - timedelta(days=2)
-    mine = hdb.get_power(start=twodaysago, end=now)
+    twodaysago = datetime.now() - timedelta(days=2)
+    mine = hdb.get_power(start=twodaysago)
     data_dict["Last two day's figures"] = mine
     for title, chartdata in data_dict.items():
         chart(chartdata, title=title)
