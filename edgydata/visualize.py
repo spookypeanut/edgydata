@@ -7,7 +7,7 @@ import matplotlib.pyplot as pyplot
 from edgydata.constants import POWER_TYPES
 
 
-def _pyplot(input_data, only_show, output_file):
+def _pyplot(input_data, only_show, output_file, title):
     sorted_data = sorted(input_data)
     X = [pp.start_time for pp in sorted_data]
     for eachtype in POWER_TYPES:
@@ -16,12 +16,14 @@ def _pyplot(input_data, only_show, output_file):
         series = [pp.energy[eachtype] for pp in sorted_data]
         pyplot.plot(X, series, label=eachtype)
     pyplot.legend()
+    if title is not None:
+        pyplot.title(title)
     pyplot.show()
 
 CHART_TYPES = {"pyplot": _pyplot}
 
 
 def chart(input_data, chart_type=list(CHART_TYPES)[0], only_show=None,
-          output_file=None):
+          output_file=None, title=None):
     chart_callable = CHART_TYPES[chart_type]
-    return chart_callable(input_data, only_show, output_file)
+    return chart_callable(input_data, only_show, output_file, title)
