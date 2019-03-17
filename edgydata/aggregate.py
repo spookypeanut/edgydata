@@ -49,7 +49,8 @@ def aggregate(input, period_length=None, data_length=None,
     We assume that all periods have the same length / separation. It would be
     too confusing otherwise.
     """
-    first_period = input[0]
+    sorted_input = sorted(input)
+    first_period = sorted_input[0]
     old_pl = first_period.duration
     multiplier = period_length.total_seconds() / old_pl.total_seconds()
     if not _is_nearly_integer(multiplier):
@@ -57,7 +58,7 @@ def aggregate(input, period_length=None, data_length=None,
         raise ValueError(msg % (period_length, old_pl))
     multiplier = _roundint(multiplier)
     return_list = []
-    for eachbatch in _batchit(input, multiplier):
+    for eachbatch in _batchit(sorted_input, multiplier):
         return_list.append(sum(eachbatch))
     return return_list
 
