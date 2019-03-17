@@ -51,7 +51,7 @@ def aggregate(input, period_length=None, data_length=None,
     """
     first_period = input[0]
     old_pl = first_period.duration
-    multiplier = period_length / old_pl
+    multiplier = period_length.total_seconds() / old_pl.total_seconds()
     if not _is_nearly_integer(multiplier):
         msg = "Period length must be a multiple of the original (%s, %s)"
         raise ValueError(msg % (period_length, old_pl))
