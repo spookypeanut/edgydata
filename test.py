@@ -24,10 +24,13 @@ def values():
     value_dict = {}
     hdb = Hybrid(debug=True)
     all_raw_data = hdb.get_power()
+    highest_period = sorted(all_raw_data, key=lambda x: x.generated)[-1]
+    value_dict["Highest generation in a period"] = highest_period.generated
     daily_data = aggregate(all_raw_data, period_length=timedelta(days=1))
-    highest_day = max(daily_data)
-    print(highest_day)
-    value_dict["Highest generation in a day"] = highest_day
+    highest_day = sorted(daily_data, key=lambda x: x.generated)[-1]
+    value_dict["Highest generation in a day"] = highest_day.generated
+
+    print(value_dict)
 
 
 def graphs():
