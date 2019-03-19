@@ -32,10 +32,10 @@ def _is_nearly_integer(number):
 
 
 def _batchit(iterable, size):
-    if iterable:
-        yield(iterable[:size])
-        for nextbatch in _batchit(iterable[size:], size):
-            yield nextbatch
+    mylist = sorted(iterable)
+    lenlist = len(mylist)
+    for ndx in range(0, lenlist, size):
+        yield mylist[ndx:min(ndx + size, lenlist)]
 
 
 def _roundint(myfloat):
