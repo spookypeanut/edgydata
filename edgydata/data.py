@@ -135,7 +135,9 @@ class PowerPeriod(object):
         mytypes = {"start_time": start_time, "duration": duration,
                    "site_id": a.site_id}
         for type_ in self._types():
-            mytypes[type_] = getattr(a, type_) + getattr(b, type_)
+            # Remember, these contain an average power, so we have
+            # average the two numbers
+            mytypes[type_] = (getattr(a, type_) + getattr(b, type_)) / 2
         result = PowerPeriod(**mytypes)
         return result
 
