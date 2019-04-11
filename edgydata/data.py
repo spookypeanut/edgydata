@@ -118,7 +118,12 @@ class PowerPeriod(object):
                 return self
             msg = "Can't add a PowerPeriod (%s) to an int (%s)"
             raise ValueError(msg % (self, other))
-        if self.start_time < other.start_time:
+        if self == other:
+            raise ValueError("Can't add a PowerPeriod to itself")
+        if self.start_time == other.start_time:
+            msg = "These two start at the same time: %s"
+            raise ValueError(msg % self.start_time)
+        elif self.start_time < other.start_time:
             a = self
             b = other
         else:
@@ -131,6 +136,8 @@ class PowerPeriod(object):
             duration = a.duration + b.duration
         else:
             print("Warning: These two PowerPeriods are not consecutive")
+            print(a)
+            print(b)
             duration = (b.start_time - a.start_time) + b.duration
         mytypes = {"start_time": start_time, "duration": duration,
                    "site_id": a.site_id}

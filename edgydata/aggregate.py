@@ -1,4 +1,3 @@
-from edgydata.constants import Combiners
 """
 Ways I want to be able to generate a data set:
     Maximum / average of all numbers for the same day over multiple years
@@ -17,6 +16,10 @@ Ways to convert a data set:
 
 
 """
+from __future__ import print_function
+
+from collections import Counter
+from edgydata.constants import Combiners
 
 
 def _is_nearly_integer(number):
@@ -29,6 +32,22 @@ def _is_nearly_integer(number):
     if 1 + int(number) - number:
         return True
     return False
+
+
+def _has_duplicate_times(iterable):
+    start_time_list = [a.start_time for a in iterable]
+    if len(start_time_list) == len(set(start_time_list)):
+        return False
+    print("Found duplicates")
+    dups = [t for t in Counter(start_time_list).items() if t[1] > 1]
+    print(dups)
+    start_time, _ = dups[0]
+    mylist = [a for a in iterable if a.start_time == start_time]
+    for pp in mylist:
+        print(pp)
+        print(pp.consumed)
+        print(pp.exported)
+    return True
 
 
 def _batchit(iterable, size):
@@ -58,8 +77,15 @@ def aggregate(input, period_length=None, data_length=None,
         raise ValueError(msg % (period_length, old_pl))
     multiplier = _roundint(multiplier)
     return_list = []
+    if _has_duplicate_times(sorted_input):
+        raise ValueError
     for eachbatch in _batchit(sorted_input, multiplier):
-        return_list.append(sum(eachbatch))
+        try:
+            total = sum(eachbatch)
+        except ValueError as e:
+            print(eachbatch)
+            raise
+        return_list.append(total)
     return return_list
 
 

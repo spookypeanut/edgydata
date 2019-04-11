@@ -25,6 +25,9 @@ def values():
     value_dict = {}
     hdb = Hybrid(debug=False)
     all_raw_data = hdb.get_power()
+    from edgydata.aggregate import _has_duplicate_times
+    if _has_duplicate_times(all_raw_data):
+        raise ValueError
     highest_period = sorted(all_raw_data, key=lambda x: x.generated)[-1]
     value_dict["Highest generation in a period"] = highest_period.generated
     daily_data = aggregate(all_raw_data, period_length=timedelta(days=1))
