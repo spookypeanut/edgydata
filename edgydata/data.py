@@ -109,7 +109,15 @@ class PowerPeriod(object):
                 return False
         return True
 
+    def __radd__(self, other):
+        return self.__add__(other)
+
     def __add__(self, other):
+        if isinstance(other, int):
+            if other == 0:
+                return self
+            msg = "Can't add a PowerPeriod (%s) to an int (%s)"
+            raise ValueError(msg % (self, other))
         if self.start_time < other.start_time:
             a = self
             b = other
