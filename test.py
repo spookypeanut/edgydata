@@ -22,7 +22,7 @@ def values():
     # Day of the year that gives the lowest average generation
     # Day of the year that gives the highest average generation
     value_dict = {}
-    hdb = Hybrid(debug=True)
+    hdb = Hybrid(debug=False)
     all_raw_data = hdb.get_power()
     highest_period = sorted(all_raw_data, key=lambda x: x.generated)[-1]
     value_dict["Highest generation in a period"] = highest_period.generated
