@@ -10,8 +10,9 @@ from edgydata.aggregate import aggregate
 
 def main():
     """ Generate some interesting information about the data """
-    values()
+    myvalues = values()
     graphs()
+    print(myvalues)
 
 
 def values():
@@ -30,7 +31,7 @@ def values():
     highest_day = sorted(daily_data, key=lambda x: x.generated)[-1]
     value_dict["Highest generation in a day"] = highest_day.generated
 
-    print(value_dict)
+    return value_dict
 
 
 def graphs():
