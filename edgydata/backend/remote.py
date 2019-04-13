@@ -106,6 +106,8 @@ class Remote(AbstractBE):
                   "name": raw["name"],
                   "start_date": _date_from_string(raw_start),
                   "end_date": _date_from_string(raw_end),
+                  "country": raw["location"]["country"],
+                  "timezone": raw["location"]["timeZone"],
                   "peak_power": raw["peakPower"]}
         return Site(**kwargs)
 
