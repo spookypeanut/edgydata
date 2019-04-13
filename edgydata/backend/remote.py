@@ -49,6 +49,7 @@ class ResponseError(IOError):
 
 
 class Remote(AbstractBE):
+    """ The backend object that talks to the SolarEdge API directly """
     def __init__(self, api_key=None, debug=False):
         AbstractBE.__init__(self, debug=debug)
         if api_key is None:
