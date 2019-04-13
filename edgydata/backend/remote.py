@@ -1,7 +1,9 @@
 import os
-import requests
-from datetime import datetime, timedelta
 from copy import deepcopy
+from datetime import datetime, timedelta
+
+import pytz
+import requests
 
 from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
@@ -25,16 +27,21 @@ def _date_to_string(input_date):
     return input_date.strftime(DATE_FORMAT)
 
 
-def _date_from_string(input_string):
-    return datetime.strptime(input_string, DATE_FORMAT).date()
+def _date_from_string(input_string, timezone="UTC"):
+    naive = datetime.strptime(input_string, DATE_FORMAT)
+    tz_object = pytz.timezone(timezone)
+    return tz_object.localize(naive).date()
 
 
 def _datetime_to_string(input_datetime):
     return input_datetime.strftime(DATETIME_FORMAT)
 
 
-def _datetime_from_string(input_string):
-    return datetime.strptime(input_string, DATETIME_FORMAT)
+def _datetime_from_string(input_string, timezone="UTC"):
+    print(input_string)
+    naive = datetime.strptime(input_string, DATETIME_FORMAT)
+    tz_object = pytz.timezone(timezone)
+    return tz_object.localize(naive)
 
 
 class ResponseError(IOError):
