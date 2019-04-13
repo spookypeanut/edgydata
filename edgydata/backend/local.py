@@ -110,6 +110,7 @@ class Local(AbstractBE):
         return return_value
 
     def is_present(self):
+        """ Check to see if the local database exists """
         sql = "SELECT name FROM sqlite_master WHERE type='table'"
         self._execute(sql)
         if self._cursor.fetchall() == []:
@@ -153,6 +154,7 @@ class Local(AbstractBE):
         return self._execute(sql)
 
     def create(self):
+        """ Create the local database """
         try:
             assert not self.is_present()
             self._create_site_table()
