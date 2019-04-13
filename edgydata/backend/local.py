@@ -1,6 +1,7 @@
 import os
 import sys
 import sqlite3
+import pytz
 from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site, PowerPeriod
@@ -17,8 +18,14 @@ def _date_to_int(mydate):
 
 def _datetime_to_int(mytime):
     """ Convert a datetime.datetime object to a unix timestamp. """
-    # Apparently, this is the safest way to do it (ignoring timezones)
-    return int((mytime - datetime(1970, 1, 1)).total_seconds())
+    # First, see if we have been given a tz naive datetime
+    epoch_time = datetime(1970, 1, 1)
+    try:
+        return int((mytime - epoch_time).total_seconds())
+    except TypeError:
+        # If not, epoch_time is relative to utc
+        epoch_time = pytz.utc.localize(epoch_time)
+        return int((mytime - epoch_time).total_seconds())
 
 
 def _timedelta_to_int(mytimedelta):
@@ -29,14 +36,20 @@ def _int_to_timedelta(myint):
     return timedelta(seconds=myint)
 
 
-def _int_to_datetime(myint):
+def _int_to_datetime(myint, timezone="UTC"):
     """ Convert a unix timestamp to a datetime.datetime object """
-    return datetime.fromtimestamp(myint)
+    naive = datetime.utcfromtimestamp(myint)
+    utc_datetime = pytz.utc.localize(naive)
+    if timezone == "UTC":
+        return utc_datetime
+    tz_object = pytz.timezone(timezone)
+    return utc_datetime.astimezone(tz_object)
 
 
-def _int_to_date(myint):
+def _int_to_date(myint, timezone="UTC"):
     """ Convert a unix timestamp to a datetime.date object """
-    return _int_to_datetime(myint).date()
+    return _int_to_datetime(myint, timezone=timezone).date()
+
 
 # The converters to use to put object types into and get them out of the
 # database. First element is to put them in, second to get them out
