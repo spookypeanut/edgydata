@@ -1,61 +1,24 @@
 import os
 import sys
+
 import sqlite3
-import pytz
 from datetime import date, datetime, timedelta
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site, PowerPeriod
 from edgydata.backend.abstract import Abstract as AbstractBE
+from edgydata.time import (date_to_int, int_to_date,
+                           datetime_to_int, int_to_datetime,
+                           timedelta_to_int, int_to_timedelta)
 
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "INTEGER", timedelta: "INTEGER"}
 
 
-def _date_to_int(mydate):
-    """ Convert a datetime.date object to a unix timestamp """
-    return _datetime_to_int(datetime.combine(mydate, datetime.min.time()))
-
-
-def _datetime_to_int(mytime):
-    """ Convert a datetime.datetime object to a unix timestamp. """
-    # First, see if we have been given a tz naive datetime
-    epoch_time = datetime(1970, 1, 1)
-    try:
-        return int((mytime - epoch_time).total_seconds())
-    except TypeError:
-        # If not, epoch_time is relative to utc
-        epoch_time = pytz.utc.localize(epoch_time)
-        return int((mytime - epoch_time).total_seconds())
-
-
-def _timedelta_to_int(mytimedelta):
-    return mytimedelta.seconds
-
-
-def _int_to_timedelta(myint):
-    return timedelta(seconds=myint)
-
-
-def _int_to_datetime(myint, timezone="UTC"):
-    """ Convert a unix timestamp to a datetime.datetime object """
-    naive = datetime.utcfromtimestamp(myint)
-    utc_datetime = pytz.utc.localize(naive)
-    if timezone == "UTC":
-        return utc_datetime
-    tz_object = pytz.timezone(timezone)
-    return utc_datetime.astimezone(tz_object)
-
-
-def _int_to_date(myint, timezone="UTC"):
-    """ Convert a unix timestamp to a datetime.date object """
-    return _int_to_datetime(myint, timezone=timezone).date()
-
-
 # The converters to use to put object types into and get them out of the
 # database. First element is to put them in, second to get them out
-_CONVERTER = {date: (_date_to_int, _int_to_date),
-              datetime: (_datetime_to_int, _int_to_datetime),
-              timedelta: (_timedelta_to_int, _int_to_timedelta)}
+_CONVERTER = {date: (date_to_int, int_to_date),
+              datetime: (datetime_to_int, int_to_datetime),
+              timedelta: (timedelta_to_int, int_to_timedelta)}
 
 
 def _check(mystr):
@@ -190,8 +153,8 @@ class Local(AbstractBE):
         raw_tuple = list(raw_tuples)[0]
         columns = self._get_site_columns()
         tmp_dict = dict(zip(columns, raw_tuple))
-        tmp_dict["start_date"] = _int_to_date(tmp_dict["start_date"])
-        tmp_dict["end_date"] = _int_to_date(tmp_dict["end_date"])
+        tmp_dict["start_date"] = int_to_date(tmp_dict["start_date"])
+        tmp_dict["end_date"] = int_to_date(tmp_dict["end_date"])
         return Site(**tmp_dict)
 
     def get_site_ids(self):
@@ -224,8 +187,8 @@ class Local(AbstractBE):
                 self.warning("%s skipped as already present" % eachpower)
                 continue
             results = [eachpower.site_id,
-                       _datetime_to_int(eachpower.start_time),
-                       _timedelta_to_int(eachpower.duration)]
+                       datetime_to_int(eachpower.start_time),
+                       timedelta_to_int(eachpower.duration)]
             for col in sorted(POWER_TYPES):
                 value = getattr(eachpower, col)
                 results.append(value)
@@ -238,11 +201,11 @@ class Local(AbstractBE):
         if start is None:
             start = 0
         else:
-            start = _datetime_to_int(start)
+            start = datetime_to_int(start)
         if end is None:
             end = sys.maxint
         else:
-            end = _datetime_to_int(end)
+            end = datetime_to_int(end)
         sql = "SELECT * FROM %s WHERE start_time >= %s AND start_time <= %s"
         sql = sql % (_check(self.power_table), start, end)
         self._execute(sql)
@@ -251,8 +214,8 @@ class Local(AbstractBE):
         columns = self._get_power_columns()
         for each_tuple in raw_tuples:
             tmp_dict = dict(zip(columns, each_tuple))
-            tmp_dict["start_time"] = _int_to_datetime(tmp_dict["start_time"])
-            tmp_dict["duration"] = _int_to_timedelta(tmp_dict["duration"])
+            tmp_dict["start_time"] = int_to_datetime(tmp_dict["start_time"])
+            tmp_dict["duration"] = int_to_timedelta(tmp_dict["duration"])
             return_set.add(PowerPeriod(**tmp_dict))
         return return_set
 
@@ -264,7 +227,7 @@ class Local(AbstractBE):
         as_int = self._cursor.fetchone()[0]
         if as_int is None:
             return None
-        return _int_to_datetime(as_int)
+        return int_to_datetime(as_int)
 
     def _get_max_time(self, site_id=None):
         sql = "SELECT MAX(start_time), duration FROM %s"
@@ -276,7 +239,7 @@ class Local(AbstractBE):
         start_time, duration = self._cursor.fetchone()
         if start_time is None:
             return None
-        return _int_to_datetime(start_time + duration)
+        return int_to_datetime(start_time + duration)
 
     def get_time_limits(self, site_id=None):
         return (self._get_min_time(site_id=site_id),
