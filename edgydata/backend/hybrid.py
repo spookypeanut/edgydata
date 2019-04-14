@@ -26,7 +26,7 @@ class Hybrid(AbstractBE):
         return self._local_be.get_power(site_id=site_id, start=start, end=end)
 
     def _update_power(self, site_id=None, start=None, end=None):
-        now = datetime.now()
+        now = get_current_datetime()
         # Let's get a round number of days, just to make things cleaner
         if start is not None:
             start = get_midnight_before(start)

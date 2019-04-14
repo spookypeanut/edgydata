@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
 
@@ -8,7 +8,8 @@ from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
 from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.time import (date_to_datetime, string_to_date,
-                           string_to_datetime, datetime_to_string)
+                           string_to_datetime, datetime_to_string,
+                           get_current_datetime)
 
 BASE_URL = "https://monitoringapi.solaredge.com"
 # SolarEdge returns its values in a strange way. These next globals help us
@@ -106,7 +107,7 @@ class Remote(AbstractBE):
         return self._get_usage(site_id, start, end)
 
     def _get_usage(self, site_id, start, end):
-        now = datetime.now()
+        now = get_current_datetime()
         if end > now:
             end = now
         return_data = []
