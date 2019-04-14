@@ -3,9 +3,10 @@ import sys
 
 import sqlite3
 from datetime import date, datetime, timedelta
+
+from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site, PowerPeriod
-from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.time import (date_to_int, int_to_date,
                            datetime_to_int, int_to_datetime,
                            timedelta_to_int, int_to_timedelta)
