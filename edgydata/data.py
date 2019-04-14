@@ -10,8 +10,9 @@ class Site(object):
     (since it can sort of be deduced from the rest of the data).
     """
     # If you add an attribute, make sure you add it here...
-    _types = {"site_id": int, "name": str, "start_date": date, "end_date": date,
-              "peak_power": float}
+    _types = {"site_id": int, "name": str, "start_date": date,
+              "end_date": date, "peak_power": float, "country": str,
+              "timezone": str}
 
     def __init__(self, **kwargs):
         for eachattr in self.list_attrs():
