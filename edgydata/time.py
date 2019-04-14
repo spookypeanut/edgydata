@@ -66,3 +66,16 @@ def string_to_datetime(input_string, timezone="UTC"):
     naive = datetime.strptime(input_string, SE_DATETIME_FORMAT)
     tz_object = pytz.timezone(timezone)
     return tz_object.localize(naive)
+
+
+def get_current_datetime():
+    return datetime.utcnow().replace(tzinfo=pytz.utc)
+
+
+def get_midnight_before(time):
+    return time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def get_midnight_after(time):
+    before = get_midnight_before(time)
+    return before + timedelta(days=1)

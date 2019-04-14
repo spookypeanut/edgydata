@@ -1,17 +1,8 @@
 from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.backend.remote import Remote as RemoteBE
 from edgydata.backend.local import Local as LocalBE
-
-from datetime import timedelta, datetime
-
-
-def get_midnight_before(time):
-    return time.replace(hour=0, minute=0, second=0, microsecond=0)
-
-
-def get_midnight_after(time):
-    before = get_midnight_before(time)
-    return before + timedelta(days=1)
+from edgydata.time import (get_current_datetime, get_midnight_after,
+                           get_midnight_before)
 
 
 class Hybrid(AbstractBE):
