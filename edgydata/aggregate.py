@@ -20,6 +20,7 @@ from __future__ import print_function
 
 from collections import Counter
 from edgydata.constants import Combiners
+from edgydata.lib import batch
 
 
 def _is_nearly_integer(number):
@@ -50,13 +51,6 @@ def _has_duplicate_times(iterable):
     return True
 
 
-def _batchit(iterable, size):
-    mylist = sorted(iterable)
-    lenlist = len(mylist)
-    for ndx in range(0, lenlist, size):
-        yield mylist[ndx:min(ndx + size, lenlist)]
-
-
 def _roundint(myfloat):
     return int(myfloat + 0.5)
 
@@ -79,7 +73,7 @@ def aggregate(input, period_length=None, data_length=None,
     return_list = []
     if _has_duplicate_times(sorted_input):
         raise ValueError
-    for eachbatch in _batchit(sorted_input, multiplier):
+    for eachbatch in batch(sorted_input, multiplier):
         try:
             total = sum(eachbatch)
         except ValueError as e:
