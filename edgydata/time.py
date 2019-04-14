@@ -1,6 +1,12 @@
 from datetime import datetime, timedelta
 import pytz
 
+from edgydata.constants import SE_DATE_FORMAT, SE_DATETIME_FORMAT
+
+
+def date_to_datetime(input_):
+    return datetime.combine(input_, datetime.min.time())
+
 
 def datetime_to_int(mytime):
     """ Convert a datetime.datetime object to a unix timestamp. """
@@ -40,3 +46,23 @@ def int_to_datetime(myint, timezone="UTC"):
 def int_to_date(myint, timezone="UTC"):
     """ Convert a unix timestamp to a datetime.date object """
     return int_to_datetime(myint, timezone=timezone).date()
+
+
+def date_to_string(input_date):
+    return input_date.strftime(SE_DATE_FORMAT)
+
+
+def string_to_date(input_string, timezone="UTC"):
+    naive = datetime.strptime(input_string, SE_DATE_FORMAT)
+    tz_object = pytz.timezone(timezone)
+    return tz_object.localize(naive).date()
+
+
+def datetime_to_string(input_datetime):
+    return input_datetime.strftime(SE_DATETIME_FORMAT)
+
+
+def string_to_datetime(input_string, timezone="UTC"):
+    naive = datetime.strptime(input_string, SE_DATETIME_FORMAT)
+    tz_object = pytz.timezone(timezone)
+    return tz_object.localize(naive)

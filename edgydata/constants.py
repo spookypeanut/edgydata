@@ -4,6 +4,9 @@ POWER_TYPES = set(['self_consumed', 'generated', 'imported', 'consumed',
                    'exported'])
 POWER = Enum("power", " ".join(sorted(POWER_TYPES)))
 
+SE_DATE_FORMAT = "%Y-%m-%d"
+SE_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 class DatePreset(Enum):
     DAY = 1

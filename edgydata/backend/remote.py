@@ -2,17 +2,15 @@ import os
 from copy import deepcopy
 from datetime import datetime, timedelta
 
-import pytz
 import requests
 
 from edgydata.data import Site, PowerPeriod
 from edgydata.constants import POWER
 from edgydata.backend.abstract import Abstract as AbstractBE
-from edgydata.lib import date_to_datetime
+from edgydata.time import (date_to_datetime, string_to_date,
+                           string_to_datetime, datetime_to_string)
 
 BASE_URL = "https://monitoringapi.solaredge.com"
-DATE_FORMAT = "%Y-%m-%d"
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # SolarEdge returns its values in a strange way. These next globals help us
 # decode those
 # Number of minutes in the listed time units
@@ -21,27 +19,6 @@ POWERUNITS = {"W": 1, "kW": 1000}
 LOOKUP = {"Consumption": POWER.consumed, "FeedIn": POWER.exported,
           "Production": POWER.generated, "Purchased": POWER.imported,
           "SelfConsumption": POWER.self_consumed}
-
-
-def _date_to_string(input_date):
-    return input_date.strftime(DATE_FORMAT)
-
-
-def _date_from_string(input_string, timezone="UTC"):
-    naive = datetime.strptime(input_string, DATE_FORMAT)
-    tz_object = pytz.timezone(timezone)
-    return tz_object.localize(naive).date()
-
-
-def _datetime_to_string(input_datetime):
-    return input_datetime.strftime(DATETIME_FORMAT)
-
-
-def _datetime_from_string(input_string, timezone="UTC"):
-    print(input_string)
-    naive = datetime.strptime(input_string, DATETIME_FORMAT)
-    tz_object = pytz.timezone(timezone)
-    return tz_object.localize(naive)
 
 
 class ResponseError(IOError):
@@ -104,8 +81,8 @@ class Remote(AbstractBE):
         raw_end = raw["lastUpdateTime"]
         kwargs = {"site_id": site_id,
                   "name": raw["name"],
-                  "start_date": _date_from_string(raw_start),
-                  "end_date": _date_from_string(raw_end),
+                  "start_date": string_to_date(raw_start),
+                  "end_date": string_to_date(raw_end),
                   "country": raw["location"]["country"],
                   "timezone": raw["location"]["timeZone"],
                   "peak_power": raw["peakPower"]}
@@ -138,8 +115,8 @@ class Remote(AbstractBE):
             return_data = self._get_usage(site_id, start, middle)
         else:
             middle = start
-        data = {"startTime": _datetime_to_string(middle),
-                "endTime": _datetime_to_string(end)}
+        data = {"startTime": datetime_to_string(middle),
+                "endTime": datetime_to_string(end)}
         sub_url = "site/%s/powerDetails.json" % site_id
         raw = self._remote_call(sub_url, data)["powerDetails"]
         meters = [m["type"] for m in raw["meters"]]
@@ -171,7 +148,7 @@ class Remote(AbstractBE):
                 datedata[eachdate][eachm] = datum
         for date, data in datedata.items():
             kwargs = {"site_id": site_id}
-            kwargs["start_time"] = _datetime_from_string(date)
+            kwargs["start_time"] = string_to_datetime(date)
             kwargs["duration"] = timedelta(hours=duration)
             for start, end in LOOKUP.items():
                 try:
