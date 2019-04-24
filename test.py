@@ -2,6 +2,8 @@
 provide some interesting data
 """
 
+from __future__ import print_function
+
 from datetime import datetime, timedelta
 from edgydata.backend.hybrid import Hybrid
 from edgydata.visualize import chart

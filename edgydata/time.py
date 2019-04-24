@@ -4,8 +4,14 @@ import pytz
 from edgydata.constants import SE_DATE_FORMAT, SE_DATETIME_FORMAT
 
 
-def date_to_datetime(input_):
-    return datetime.combine(input_, datetime.min.time())
+def date_to_datetime(input_, timezone="UTC"):
+    """ Convert a date into a datetime (midnight) """
+    naive = datetime.combine(input_, datetime.min.time())
+    utc_datetime = pytz.utc.localize(naive)
+    if timezone == "UTC":
+        return utc_datetime
+    tz_object = pytz.timezone(timezone)
+    return utc_datetime.astimezone(tz_object)
 
 
 def datetime_to_int(mytime):
