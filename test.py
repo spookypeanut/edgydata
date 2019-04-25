@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from edgydata.backend.hybrid import Hybrid
 from edgydata.visualize import chart
 from edgydata.aggregate import aggregate
+from edgydata.time import get_current_datetime
 
 
 def main():
@@ -44,7 +45,7 @@ def graphs():
     data_dict = {}
     hdb = Hybrid(debug=True)
 
-    twodaysago = datetime.now() - timedelta(days=2)
+    twodaysago = get_current_datetime() - timedelta(days=2)
     mine = hdb.get_power(start=twodaysago)
     data_dict["Last two day's figures"] = mine
     for title, chartdata in data_dict.items():
