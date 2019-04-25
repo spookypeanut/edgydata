@@ -17,6 +17,13 @@ class Hybrid(AbstractBE):
         self._local_be = LocalBE(path=local_path, debug=debug)
 
     def get_power(self, site_id=None, start=None, end=None):
+        msg = "All datetimes must have a timezone"
+        if start is not None and (start.tzinfo is None or
+                                  start.tzinfo.utcoffset(start) is None):
+            raise ValueError(msg)
+        if end is not None and (end.tzinfo is None or
+                                end.tzinfo.utcoffset(end) is None):
+            raise ValueError(msg)
         min_local, max_local = self._local_be.get_time_limits(site_id=site_id)
         if start is not None and end is not None:
             if min_local < start and max_local > end:
