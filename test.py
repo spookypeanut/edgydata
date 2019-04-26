@@ -32,10 +32,11 @@ def values():
     if _has_duplicate_times(all_raw_data):
         raise ValueError
     highest_period = sorted(all_raw_data, key=lambda x: x.generated)[-1]
-    value_dict["Highest generation in a period"] = highest_period.generated
+    high_period = highest_period.energy.generated
+    value_dict["Highest generation in a period"] = high_period
     daily_data = aggregate(all_raw_data, period_length=timedelta(days=1))
     highest_day = sorted(daily_data, key=lambda x: x.generated)[-1]
-    value_dict["Highest generation in a day"] = highest_day.generated
+    value_dict["Highest generation in a day"] = highest_day.energy.generated
 
     return value_dict
 
