@@ -63,14 +63,14 @@ def combine_periods(power_periods, combiner):
     raise NotImplementedError
 
 
-def aggregate(input, period_length=None, data_length=None,
+def aggregate(input_, period_length=None, data_length=None,
               combination=Combiners.SUM):
     """ Combine the data into more useful chunks
 
     We assume that all periods have the same length / separation. It would be
     too confusing otherwise.
     """
-    sorted_input = sorted(input)
+    sorted_input = sorted(input_)
     first_period = sorted_input[0]
     old_pl = first_period.duration
     multiplier = period_length.total_seconds() / old_pl.total_seconds()
