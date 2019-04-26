@@ -113,6 +113,26 @@ class PowerPeriod(object):
     def __radd__(self, other):
         return self.__add__(other)
 
+    def __mul__(self, other):
+        # When dividing by a number, use the same start time, duration
+        # and site_id, just divide the power values
+        mytypes = {"start_time": self.start_time, "duration": self.duration,
+                   "site_id": self.site_id}
+        for type_ in self._types():
+            mytypes[type_] = getattr(self, type_) * other
+        result = PowerPeriod(**mytypes)
+        return result
+
+    def __truediv__(self, other):
+        # When dividing by a number, use the same start time, duration
+        # and site_id, just divide the power values
+        mytypes = {"start_time": self.start_time, "duration": self.duration,
+                   "site_id": self.site_id}
+        for type_ in self._types():
+            mytypes[type_] = getattr(self, type_) / other
+        result = PowerPeriod(**mytypes)
+        return result
+
     def __add__(self, other):
         if isinstance(other, int):
             if other == 0:
