@@ -35,8 +35,11 @@ def values():
     high_period = highest_period.energy.generated
     value_dict["Highest generation in a period"] = high_period
     daily_data = aggregate(all_raw_data, period_length=timedelta(days=1))
-    highest_day = sorted(daily_data, key=lambda x: x.generated)[-1]
+    sorted_data = sorted(daily_data, key=lambda x: x.generated)
+    highest_day = sorted_data[-1]
     value_dict["Highest generation in a day"] = highest_day.energy.generated
+    lowest_day = sorted_data[0]
+    value_dict["Lowest generation in a day"] = lowest_day.energy.generated
 
     return value_dict
 
