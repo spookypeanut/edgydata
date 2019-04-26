@@ -83,7 +83,7 @@ class PowerPeriod(object):
         energydict = {}
         for eachtype in self._types():
             # To convert from average kW to kWh
-            hours = self.duration.seconds / 60 / 60
+            hours = self.duration.total_seconds() / 60 / 60
             energydict[eachtype] = getattr(self, eachtype) * hours
         return Energy(**energydict)
 
