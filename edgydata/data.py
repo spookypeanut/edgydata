@@ -133,19 +133,35 @@ class PowerPeriod(object):
         if not a.site_id == b.site_id:
             raise ValueError("These two PowerPeriods are for different sites")
         start_time = a.start_time
+        duration_sum = a.duration + b.duration
         if a.start_time + a.duration == b.start_time:
-            duration = a.duration + b.duration
+            duration = duration_sum
         else:
             print("Warning: These two PowerPeriods are not consecutive")
             print(a)
             print(b)
+            # When they're not consecutive, the duration goes from the
+            # start of the first to the end of the last (so includes any
+            # gap)
             duration = (b.start_time - a.start_time) + b.duration
         mytypes = {"start_time": start_time, "duration": duration,
                    "site_id": a.site_id}
         for type_ in self._types():
             # Remember, these contain an average power, so we have
             # average the two numbers
-            mytypes[type_] = (getattr(a, type_) + getattr(b, type_)) / 2
+            total = (getattr(a, type_) * a.duration.total_seconds() +
+                     getattr(b, type_) * b.duration.total_seconds())
+            if total != 0 and duration_sum.total_seconds() == 0:
+                msg = "Duration is zero but power is not"
+                print(type_)
+                print(a)
+                print(getattr(a, type_))
+                print(a.duration)
+                print(b)
+                print(getattr(b, type_))
+                print(b.duration)
+                raise ValueError(msg)
+            mytypes[type_] = total / duration_sum.total_seconds()
         result = PowerPeriod(**mytypes)
         return result
 
