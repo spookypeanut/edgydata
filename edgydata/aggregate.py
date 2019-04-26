@@ -55,6 +55,14 @@ def _roundint(myfloat):
     return int(myfloat + 0.5)
 
 
+def combine_periods(power_periods, combiner):
+    if combiner == Combiners.SUM:
+        return sum(power_periods)
+    if combiner == Combiners.MEAN:
+        return sum(power_periods) / len(power_periods)
+    raise NotImplementedError
+
+
 def aggregate(input, period_length=None, data_length=None,
               combination=Combiners.SUM):
     """ Combine the data into more useful chunks
@@ -75,8 +83,8 @@ def aggregate(input, period_length=None, data_length=None,
         raise ValueError
     for eachbatch in batch(sorted_input, multiplier):
         try:
-            total = sum(eachbatch)
-        except ValueError as e:
+            total = combine_periods(eachbatch, combination)
+        except ValueError:
             print(eachbatch)
             raise
         return_list.append(total)
