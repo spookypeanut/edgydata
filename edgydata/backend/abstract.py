@@ -19,6 +19,9 @@ class Abstract(object):
         if self._debug:
             self._print(msg)
 
+    def info(self, msg):
+        self._print(msg)
+
     def warning(self, msg):
         self._print("WARNING: %s" % msg)
 
