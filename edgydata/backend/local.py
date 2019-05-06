@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 from edgydata.backend.abstract import Abstract as AbstractBE
 from edgydata.constants import POWER_TYPES
 from edgydata.data import Site, PowerPeriod
+from edgydata.lib import batch
 from edgydata.time import (date_to_int, int_to_date,
                            datetime_to_int, int_to_datetime,
                            timedelta_to_int, int_to_timedelta)
@@ -14,6 +15,7 @@ from edgydata.time import (date_to_int, int_to_date,
 _TYPE_LOOKUP = {str: "STRING", int: "INTEGER", float: "FLOAT",
                 date: "INTEGER", timedelta: "INTEGER"}
 
+INSERTBATCHSIZE = 100
 
 # The converters to use to put object types into and get them out of the
 # database. First element is to put them in, second to get them out
@@ -58,18 +60,24 @@ class Local(AbstractBE):
         self._conn = sqlite3.connect(self._dbpath)
         self._cursor = self._conn.cursor()
 
-    def _execute(self, sql, variables=None):
+    def _execute(self, sql, variables=None, many=False):
         """ Execute an sql query, after optionally printing it """
         self.debug("Executing:")
         self.debug(sql)
         if variables is None:
-            return_value = self._cursor.execute(sql)
+            if many is True:
+                return_value = self._cursor.executemany(sql)
+            else:
+                return_value = self._cursor.execute(sql)
         else:
             # TODO: Check if it's a tuple / iterable
             if not isinstance(variables, list):
                 variables = [variables]
             self.debug("Variables: %s" % (variables,))
-            return_value = self._cursor.execute(sql, variables)
+            if many is True:
+                return_value = self._cursor.executemany(sql, variables)
+            else:
+                return_value = self._cursor.execute(sql, variables)
         self._conn.commit()
         return return_value
 
@@ -156,6 +164,8 @@ class Local(AbstractBE):
         tmp_dict = dict(zip(columns, raw_tuple))
         tmp_dict["start_date"] = int_to_date(tmp_dict["start_date"])
         tmp_dict["end_date"] = int_to_date(tmp_dict["end_date"])
+        print("tmp_dict")
+        print(tmp_dict)
         return Site(**tmp_dict)
 
     def get_site_ids(self):
@@ -182,21 +192,34 @@ class Local(AbstractBE):
         return False
 
     def add_power(self, power):
-        # TODO: do all rows in one SQL query
-        for eachpower in power:
-            if self._has_power(eachpower):
-                self.warning("%s skipped as already present" % eachpower)
-                continue
-            results = [eachpower.site_id,
-                       datetime_to_int(eachpower.start_time),
-                       timedelta_to_int(eachpower.duration)]
-            for col in sorted(POWER_TYPES):
-                value = getattr(eachpower, col)
-                results.append(value)
+        """ Add an interable of power periods to the local database. Skip them
+        if they're already in there.
+        """
+        msg = "Adding %s power periods to the local database" % len(power)
+        self.info(msg)
+        sorted_power = sorted(power)
+        start = sorted_power[0].start_time
+        end = sorted_power[-1].start_time + sorted_power[-1].duration
+        msg = "From %s to %s" % (start, end)
+        self.info(msg)
+        for powerbatch in batch(power, INSERTBATCHSIZE):
+            rows = []
+            for eachpower in powerbatch:
+                if self._has_power(eachpower):
+                    self.warning("%s skipped as already present" % eachpower)
+                    continue
+                power_row = [eachpower.site_id,
+                             datetime_to_int(eachpower.start_time),
+                             timedelta_to_int(eachpower.duration)]
+                for col in sorted(POWER_TYPES):
+                    value = getattr(eachpower, col)
+                    power_row.append(value)
+                rows.append(power_row)
             sql = "INSERT INTO %s VALUES (?, ?, ?, %s)"
             more_args = ", ".join(["?"] * len(POWER_TYPES))
             sql = sql % (_check(self.power_table), more_args)
-            self._execute(sql, results)
+            print(sql)
+            self._execute(sql, rows, many=True)
 
     def get_power(self, site_id=None, start=None, end=None):
         if start is None:
