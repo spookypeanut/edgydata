@@ -111,7 +111,9 @@ class Remote(AbstractBE):
         if end > now:
             end = now
         return_data = []
-        if (end - start).days > 28:
+        numdays = (end - start).days
+        if numdays > 28:
+            self.info("%s days is too many, splitting" % numdays)
             middle = end - timedelta(days=27)
             return_data = self._get_usage(site_id, start, middle)
         else:
@@ -119,6 +121,7 @@ class Remote(AbstractBE):
         data = {"startTime": datetime_to_string(middle),
                 "endTime": datetime_to_string(end)}
         sub_url = "site/%s/powerDetails.json" % site_id
+        self.info("Retrieving data for %s - %s" % (middle, end))
         raw = self._remote_call(sub_url, data)["powerDetails"]
         meters = [m["type"] for m in raw["meters"]]
         # This next sorry section is just to get a list of all times in
