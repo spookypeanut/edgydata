@@ -151,14 +151,14 @@ class Remote(AbstractBE):
             kwargs = {"site_id": site_id}
             kwargs["start_time"] = string_to_datetime(date)
             kwargs["duration"] = timedelta(hours=duration)
-            for start, end in LOOKUP.items():
+            for start_, end_ in LOOKUP.items():
                 try:
-                    kwargs[end.name] = data[start]
+                    kwargs[end.name] = data[start_]
                 except Exception:
                     self.debug(date)
                     self.debug(data)
-                    self.debug(start)
-                    self.debug(end)
+                    self.debug(start_)
+                    self.debug(end_)
                     raise
             try:
                 return_data.append(PowerPeriod(**kwargs))
