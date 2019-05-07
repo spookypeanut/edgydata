@@ -15,6 +15,8 @@ class Hybrid(AbstractBE):
         AbstractBE.__init__(self, debug=debug)
         self._remote_be = RemoteBE(api_key=api_key, debug=debug)
         self._local_be = LocalBE(path=local_path, debug=debug)
+        if not self._local_be.is_present():
+            self._local_be.create()
 
     def get_power(self, site_id=None, start=None, end=None):
         msg = "All datetimes must have a timezone"
