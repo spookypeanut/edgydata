@@ -47,14 +47,23 @@ def values():
 def graphs():
     """ Function that generates some interesting graphs from the data """
     data_dict = {}
-    hdb = Hybrid(debug=True)
+    hdb = Hybrid(debug=False)
 
     twodaysago = get_current_datetime() - timedelta(days=2)
     mine = hdb.get_power(start=twodaysago)
     data_dict["Last two day's figures"] = mine
     for title, chartdata in data_dict.items():
         chart(chartdata, title=title)
+
+    data_dict["All-time"] = hdb.get_power()
+    one_day = timedelta(days=1)
+    data_dict["All-time by day"] = aggregate(data_dict["All-time"],
+                                             period_length=one_day)
+
     # Average generation by day of year
+    for title, chartdata in data_dict.items():
+        chart(chartdata, title=title)
+
     # Average generation by time of day
     # Average consumption by time of day
 

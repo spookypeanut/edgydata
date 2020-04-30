@@ -156,7 +156,7 @@ class Remote(AbstractBE):
             kwargs["duration"] = timedelta(hours=duration)
             for start_, end_ in LOOKUP.items():
                 try:
-                    kwargs[end.name] = data[start_]
+                    kwargs[end_.name] = data[start_]
                 except Exception:
                     self.debug(date)
                     self.debug(data)

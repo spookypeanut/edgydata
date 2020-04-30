@@ -47,7 +47,7 @@ class Local(AbstractBE):
     site_table = "site"
     power_table = "power"
 
-    def __init__(self, path=None, debug=True):
+    def __init__(self, path=None, debug=False):
         AbstractBE.__init__(self, debug=debug)
         # If we get given a path, use it, but we can make up our own
         if path is None:
