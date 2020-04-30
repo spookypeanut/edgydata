@@ -7,12 +7,17 @@ Ways I want to be able to generate a data set:
 Ways to convert a data set:
     Increase period length (max, min, avg, specific block number)
         (e.g. a week long period with 15m blocks ->
-         a week long period with 1d blocks)
+         a week long period with 1d blocks, or
+         all periods with 15m blocks ->
+         all periods with one month blocks)
     Reduce data length
         (e.g. a year long period with 15m blocks ->
          a week long period with 15m blocks)
     Thin by date
         (e.g. keep only blocks where the date is 25/12/*)
+    Combine by date
+        (e.g. average all periods by month
+         sum all periods by day of week)
 
 
 """
